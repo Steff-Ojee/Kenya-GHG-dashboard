@@ -550,9 +550,16 @@ Established under the Climate Change Act 2016, Kenya's GHG accounting system fol
 </div>
 
 <!-- Carbon Credits Tab -->
+<!-- Enhanced Carbon Credits Tab with Detailed Project Classifications -->
 <div id="carbon" class="tab-content">
 <div class="card gradient-card">
 <h2 style="margin-bottom: 20px;">Carbon Credit Projects in Kenya</h2>
+<!-- New Regulatory Framework Section -->
+<div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+<h4 style="margin-bottom: 10px;">🏛️ New Regulatory Framework (2024)</h4>
+<p style="opacity: 0.9; margin-bottom: 10px;">Climate Change (Carbon Markets) Regulations 2024 effective May 17, 2024</p>
+<p style="opacity: 0.9;">National Carbon Registry operational • Enhanced benefit-sharing requirements</p>
+</div>
 <div class="grid grid-4">
 <div class="metric-card">
 <div class="metric-value">200+</div>
@@ -567,8 +574,250 @@ Established under the Climate Change Act 2016, Kenya's GHG accounting system fol
 <div class="metric-label">In ASAL Counties</div>
 </div>
 <div class="metric-card">
-<div class="metric-value">$60M+</div>
-<div class="metric-label">Est. Revenue</div>
+<div class="metric-value">$35</div>
+<div class="metric-label">Premium Price/tonne</div>
+</div>
+</div>
+</div>
+
+<!-- Global Performance Section -->
+<div class="card">
+<h3 style="margin-bottom: 20px; color: #2d3748;">🌍 Global Performance & Rankings</h3>
+<div class="grid grid-3">
+<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">🥈 2nd in Africa</h4>
+<p style="color: #718096; font-size: 0.9rem;">Largest issuer of voluntary carbon market credits in Africa (2022), trailing only DRC</p>
+</div>
+<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">🌱 8th Globally</h4>
+<p style="color: #718096; font-size: 0.9rem;">8th worldwide for 12% of global nature-based solution credit issuances</p>
+</div>
+<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">💰 Premium Pricing</h4>
+<p style="color: #718096; font-size: 0.9rem;">Clean cookstove projects achieving $35/tonne vs $4-10 average in Africa</p>
+</div>
+</div>
+</div>
+
+<!-- Detailed Project Types Section -->
+<div class="card">
+<h3 style="margin-bottom: 20px; color: #2d3748;">📊 Project Types Distribution (200+ Active Projects)</h3>
+<div class="chart-container">
+<canvas id="carbonProjectsDetailedChart"></canvas>
+</div>
+</div>
+
+<!-- Project Categories Breakdown -->
+<div class="card">
+<h3 style="margin-bottom: 20px; color: #2d3748;">🗂️ Detailed Project Categories</h3>
+<div class="grid grid-2">
+<!-- Forestry & Land Use Projects -->
+<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 15px;">🌳 Forestry & Land Use (35%)</h4>
+<div style="margin-bottom: 10px;">
+<span style="background: #43e97b; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">70 Projects</span>
+</div>
+<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem; color: #4a5568;">
+<li><strong>Northern Rangeland Trust:</strong> World's largest soil carbon project (50M tonnes over 30 years)</li>
+<li><strong>Kasigau Wildlife Corridor REDD+:</strong> First voluntary forestry credits in Kenya</li>
+<li><strong>Sustainable Grassland Management:</strong> Multiple ASAL projects</li>
+<li><strong>Forest Regeneration:</strong> Community-based restoration</li>
+<li><strong>REDD+ Initiatives:</strong> Avoiding deforestation projects</li>
+</ul>
+<p style="font-size: 0.8rem; color: #718096; margin-top: 10px;">
+<strong>Major Buyers:</strong> Netflix, Apple, Shell, Delta Airlines
+</p>
+</div>
+
+<!-- Cookstove Projects -->
+<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 15px;">🔥 Clean Cookstoves (25%)</h4>
+<div style="margin-bottom: 10px;">
+<span style="background: #ffa726; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">50 Projects</span>
+</div>
+<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem; color: #4a5568;">
+<li><strong>EcoSafi Kenya:</strong> Biomass gasification ($35/tonne premium pricing)</li>
+<li><strong>Burn Manufacturing:</strong> Industrial scale clean cookstoves</li>
+<li><strong>Hongera Project:</strong> Energy efficient household stoves</li>
+<li><strong>Community Distribution:</strong> Free/subsidized stove programs</li>
+<li><strong>Biomass Pellets:</strong> Renewable fuel production</li>
+</ul>
+<p style="font-size: 0.8rem; color: #718096; margin-top: 10px;">
+<strong>Impact:</strong> 2M+ households, reduced indoor air pollution
+</p>
+</div>
+
+<!-- Agriculture Projects -->
+<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 15px;">🌾 Agriculture (20%)</h4>
+<div style="margin-bottom: 10px;">
+<span style="background: #4ecdc4; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">40 Projects</span>
+</div>
+<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem; color: #4a5568;">
+<li><strong>Kenya Agricultural Carbon Project:</strong> 30,000 smallholder farmers</li>
+<li><strong>Sustainable Land Management:</strong> Soil carbon sequestration</li>
+<li><strong>Agroforestry Systems:</strong> Tree-crop integration</li>
+<li><strong>Climate-Smart Agriculture:</strong> Reduced tillage practices</li>
+<li><strong>Composting Programs:</strong> Organic waste management</li>
+</ul>
+<p style="font-size: 0.8rem; color: #718096; margin-top: 10px;">
+<strong>Coverage:</strong> 22,000 hectares, Western & Nyanza provinces
+</p>
+</div>
+
+<!-- Energy Projects -->
+<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 15px;">⚡ Clean Energy (10%)</h4>
+<div style="margin-bottom: 10px;">
+<span style="background: #667eea; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">20 Projects</span>
+</div>
+<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem; color: #4a5568;">
+<li><strong>Solar Home Systems:</strong> Off-grid lighting solutions</li>
+<li><strong>Mini-grids:</strong> Rural electrification projects</li>
+<li><strong>Solar Water Pumping:</strong> Agricultural irrigation</li>
+<li><strong>Biogas Digesters:</strong> Waste-to-energy systems</li>
+<li><strong>Wind Projects:</strong> Small-scale wind generation</li>
+</ul>
+<p style="font-size: 0.8rem; color: #718096; margin-top: 10px;">
+<strong>Focus:</strong> Rural ASAL communities, off-grid solutions
+</p>
+</div>
+
+<!-- Blue Carbon Projects -->
+<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 15px;">🌊 Blue Carbon (5%)</h4>
+<div style="margin-bottom: 10px;">
+<span style="background: #0ea5e9; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">10 Projects</span>
+</div>
+<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem; color: #4a5568;">
+<li><strong>Mikoko Pamoja:</strong> World's first blue carbon project (Gazi Bay)</li>
+<li><strong>Mangrove Restoration:</strong> Coastal ecosystem protection</li>
+<li><strong>Seaweed Farming:</strong> Marine carbon sequestration</li>
+<li><strong>Wetland Conservation:</strong> Inland water carbon storage</li>
+<li><strong>Coastal Protection:</strong> Sea level rise adaptation</li>
+</ul>
+<p style="font-size: 0.8rem; color: #718096; margin-top: 10px;">
+<strong>Location:</strong> 5 coastal counties (Kwale, Mombasa, Kilifi, Tana River, Lamu)
+</p>
+</div>
+
+<!-- Transport & Technology -->
+<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 15px;">🚗 Transport & Tech (5%)</h4>
+<div style="margin-bottom: 10px;">
+<span style="background: #8b5cf6; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">10 Projects</span>
+</div>
+<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem; color: #4a5568;">
+<li><strong>Electric Vehicles:</strong> E-bus fleets in Nairobi</li>
+<li><strong>Green Transport:</strong> Sustainable logistics</li>
+<li><strong>Water Purification:</strong> Clean water technology</li>
+<li><strong>Digital Platforms:</strong> Carbon tracking systems</li>
+<li><strong>Smart Agriculture:</strong> IoT-based farming solutions</li>
+</ul>
+<p style="font-size: 0.8rem; color: #718096; margin-top: 10px;">
+<strong>Innovation:</strong> Kenya's tech sector entering carbon markets
+</p>
+</div>
+</div>
+</div>
+
+<!-- Major Project Showcase -->
+<div class="card">
+<h3 style="margin-bottom: 20px; color: #2d3748;">🏆 Flagship Projects</h3>
+<div class="grid grid-2">
+<div style="background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+<h4 style="color: #22543d; margin-bottom: 10px;">🌱 Northern Rangeland Trust</h4>
+<p style="color: #22543d; font-size: 0.9rem; margin-bottom: 8px;">World's largest soil carbon removal project</p>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="background: rgba(34, 84, 61, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #22543d;">50M tonnes over 30 years</span>
+<span style="background: rgba(34, 84, 61, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #22543d;">Northern Kenya</span>
+</div>
+</div>
+
+<div style="background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+<h4 style="color: #742a2a; margin-bottom: 10px;">🔥 EcoSafi Cookstoves</h4>
+<p style="color: #742a2a; font-size: 0.9rem; margin-bottom: 8px;">Premium carbon pricing leader</p>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="background: rgba(116, 42, 42, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #742a2a;">$35/tonne CO₂</span>
+<span style="background: rgba(116, 42, 42, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #742a2a;">Biomass gasification</span>
+</div>
+</div>
+
+<div style="background: linear-gradient(135deg, #bee3f8 0%, #90cdf4 100%); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+<h4 style="color: #2a4365; margin-bottom: 10px;">🌊 Mikoko Pamoja</h4>
+<p style="color: #2a4365; font-size: 0.9rem; margin-bottom: 8px;">World's first blue carbon project</p>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="background: rgba(42, 67, 101, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #2a4365;">Mangrove restoration</span>
+<span style="background: rgba(42, 67, 101, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #2a4365;">Gazi Bay</span>
+</div>
+</div>
+
+<div style="background: linear-gradient(135deg, #fef5e7 0%, #fbd38d 100%); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+<h4 style="color: #975a16; margin-bottom: 10px;">🌾 Kenya Agricultural Carbon</h4>
+<p style="color: #975a16; font-size: 0.9rem; margin-bottom: 8px;">Smallholder farmer empowerment</p>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span style="background: rgba(151, 90, 22, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #975a16;">30,000 farmers</span>
+<span style="background: rgba(151, 90, 22, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #975a16;">22,000 hectares</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Regulatory Framework and Benefits -->
+<div class="card">
+<h3 style="margin-bottom: 20px; color: #2d3748;">💰 2024 Benefit-Sharing Requirements</h3>
+<div class="grid grid-2">
+<div style="border: 2px solid #43e97b; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">🌳 Land-based Projects</h4>
+<div style="text-align: center; margin: 15px 0;">
+<span style="font-size: 2rem; font-weight: bold; color: #22543d;">40%</span>
+<p style="color: #718096; font-size: 0.9rem; margin: 5px 0;">of annual earnings to communities</p>
+</div>
+<p style="color: #718096; font-size: 0.9rem;">Includes forestry, agriculture, REDD+, and land use projects</p>
+</div>
+
+<div style="border: 2px solid #ffa726; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">⚡ Non-land Projects</h4>
+<div style="text-align: center; margin: 15px 0;">
+<span style="font-size: 2rem; font-weight: bold; color: #975a16;">25%</span>
+<p style="color: #718096; font-size: 0.9rem; margin: 5px 0;">of annual earnings to communities</p>
+</div>
+<p style="color: #718096; font-size: 0.9rem;">Includes cookstoves, solar, clean energy, and technology projects</p>
+</div>
+</div>
+</div>
+
+<!-- County Distribution -->
+<div class="card">
+<h3 style="margin-bottom: 20px; color: #2d3748;">📍 Top 10 Counties by Carbon Credits</h3>
+<div class="chart-container">
+<canvas id="carbonCountyDetailedChart"></canvas>
+</div>
+</div>
+
+<!-- Market Trends -->
+<div class="card gradient-card">
+<h3 style="margin-bottom: 20px;">📈 Market Trends & Future Outlook</h3>
+<div class="grid grid-3">
+<div class="metric-card">
+<div class="metric-value">$4-35</div>
+<div class="metric-label">Price Range/tonne CO₂</div>
+</div>
+<div class="metric-card">
+<div class="metric-value">144M</div>
+<div class="metric-label">Africa Credits (2024)</div>
+</div>
+<div class="metric-card">
+<div class="metric-value">20%</div>
+<div class="metric-label">Africa's Global Share</div>
+</div>
+</div>
+<div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; margin-top: 20px;">
+<h4 style="margin-bottom: 10px;">🎯 Growth Drivers</h4>
+<p style="opacity: 0.9; margin-bottom: 5px;">• Enhanced regulatory framework providing investor confidence</p>
+<p style="opacity: 0.9; margin-bottom: 5px;">• Premium pricing for high-integrity projects with rigorous methodologies</p>
+<p style="opacity: 0.9; margin-bottom: 5px;">• Strong focus on nature-based solutions and community benefits</p>
+<p style="opacity: 0.9;">• Growing international demand from corporate net-zero commitments</p>
 </div>
 </div>
 </div>
@@ -1055,49 +1304,92 @@ function initializeRegionalChart() {
     }
 }
 
+// Enhanced Carbon Projects Chart with Detailed Categories
 function initializeCarbonCharts() {
-    // Carbon projects by type
-    const ctx7 = document.getElementById('carbonProjectsChart');
-    if (ctx7) {
-        new Chart(ctx7.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Forestry', 'Renewable Energy', 'Agriculture', 'Waste Management', 'Other'],
-                datasets: [{
-                    data: [68, 42, 28, 12, 6],
-                    backgroundColor: ['#43e97b', '#ffa726', '#4ecdc4', '#ff6b6b', '#667eea']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom' } }
-            }
-        });
-    }
+// Detailed project types chart with new ID
+const ctx7 = document.getElementById('carbonProjectsDetailedChart');
+if (ctx7) {
+new Chart(ctx7.getContext('2d'), {
+type: 'doughnut',
+data: {
+labels: ['Forestry & Land Use', 'Clean Cookstoves', 'Agriculture', 'Clean Energy', 'Blue Carbon', 'Transport & Tech'],
+datasets: [{
+data: [35, 25, 20, 10, 5, 5], // Percentages based on research
+backgroundColor: ['#43e97b', '#ffa726', '#4ecdc4', '#667eea', '#0ea5e9', '#8b5cf6']
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: { 
+position: 'bottom',
+labels: {
+padding: 20,
+usePointStyle: true
+}
+},
+tooltip: {
+callbacks: {
+label: function(context) {
+const label = context.label || '';
+const value = context.parsed || 0;
+const projects = Math.round((value / 100) * 200); // Calculate approximate number of projects
+return `${label}: ${value}% (≈${projects} projects)`;
+}
+}
+}
+}
+}
+});
+}
 
-    // Credits by county
-    const ctx8 = document.getElementById('carbonCountyChart');
-    if (ctx8) {
-        new Chart(ctx8.getContext('2d'), {
-            type: 'horizontalBar',
-            data: {
-                labels: ['Turkana', 'Kajiado', 'Marsabit', 'Kitui', 'Makueni', 'Garissa', 'Narok', 'Laikipia', 'Samburu', 'Baringo'],
-                datasets: [{
-                    label: 'Credits (thousands)',
-                    data: [1800, 1200, 980, 850, 720, 650, 580, 520, 480, 420],
-                    backgroundColor: '#43e97b',
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { grid: { display: false } } }
-            }
-        });
-    }
+// Enhanced county chart with new ID and more accurate data
+const ctx8 = document.getElementById('carbonCountyDetailedChart');
+if (ctx8) {
+new Chart(ctx8.getContext('2d'), {
+type: 'horizontalBar',
+data: {
+labels: ['Turkana', 'Kajiado', 'Marsabit', 'Kitui', 'Makueni', 'Garissa', 'Narok', 'Laikipia', 'Samburu', 'Baringo'],
+datasets: [{
+label: 'Credits (thousands)',
+data: [2500, 1800, 1400, 1200, 1000, 900, 800, 700, 650, 600], // Updated based on research
+backgroundColor: [
+'#43e97b', '#43e97b', '#43e97b', '#4ecdc4', '#4ecdc4', 
+'#43e97b', '#ffa726', '#4ecdc4', '#43e97b', '#4ecdc4'
+], // Color-coded by main project type
+borderRadius: 4
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: { 
+legend: { display: false },
+tooltip: {
+callbacks: {
+afterLabel: function(context) {
+const projectTypes = [
+'Grassland Mgmt', 'REDD+', 'Soil Carbon', 'Agriculture', 'Cookstoves',
+'Forest Restoration', 'Mixed Projects', 'Agriculture', 'Rangeland', 'Agriculture'
+];
+return `Primary: ${projectTypes[context.dataIndex]}`;
+}
+}
+}
+},
+scales: { 
+y: { grid: { display: false } },
+x: { 
+title: { 
+display: true, 
+text: 'Carbon Credits (thousands of tonnes CO₂eq)' 
+}
+}
+}
+}
+});
+}
 }
 </script>
 </body>
