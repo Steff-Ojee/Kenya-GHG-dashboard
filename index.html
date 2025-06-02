@@ -465,6 +465,57 @@
                     </div>
                 </div>
             </div>
+            <!-- === SCENARIO ANALYSIS TOOL === -->
+<h2>🔧 Emissions Scenario Analysis Tool</h2>
+<p>Adjust key variables to see projected emissions:</p>
+
+<label for="renewableInput">Renewable Energy Share (%):</label>
+<input type="range" id="renewableInput" min="0" max="100" value="30">
+<span id="renewableValue">30%</span><br><br>
+
+<label for="deforestationInput">Deforestation Rate (ha/year):</label>
+<input type="range" id="deforestationInput" min="0" max="100000" step="1000" value="20000">
+<span id="deforestationValue">20,000 ha/year</span><br><br>
+
+<h3>📊 Estimated Annual Emissions:</h3>
+<ul>
+  <li>Energy Sector: <strong><span id="energyEmissions">---</span> MtCO₂e</strong></li>
+  <li>Land Use Sector: <strong><span id="landUseEmissions">---</span> MtCO₂e</strong></li>
+  <li><strong>Total: <span id="totalEmissions">---</span> MtCO₂e</strong></li>
+</ul>
+
+<script>
+function updateEmissions() {
+  // Get input values
+  const renewable = parseInt(document.getElementById("renewableInput").value);
+  const deforestation = parseInt(document.getElementById("deforestationInput").value);
+
+  // Update display values
+  document.getElementById("renewableValue").innerText = `${renewable}%`;
+  document.getElementById("deforestationValue").innerText = deforestation.toLocaleString() + " ha/year";
+
+  // Simplified emission estimates (illustrative only)
+  const baseEnergyEmissions = 20; // MtCO₂e baseline
+  const energyEmissions = baseEnergyEmissions * (1 - renewable / 100);
+
+  const landUseEmissions = deforestation * 0.00012; // Convert ha to MtCO₂e (very rough)
+
+  const total = (energyEmissions + landUseEmissions).toFixed(2);
+
+  // Update DOM
+  document.getElementById("energyEmissions").innerText = energyEmissions.toFixed(2);
+  document.getElementById("landUseEmissions").innerText = landUseEmissions.toFixed(2);
+  document.getElementById("totalEmissions").innerText = total;
+}
+
+// Initial run
+updateEmissions();
+
+// Listen for slider changes
+document.getElementById("renewableInput").addEventListener("input", updateEmissions);
+document.getElementById("deforestationInput").addEventListener("input", updateEmissions);
+</script>
+
         </main>
 
         <footer class="footer">
