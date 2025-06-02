@@ -1,1 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenya GHG Accounting Analysis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            color: #718096;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        .nav-tabs {
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+        }
+        
+        .nav-tab {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: #718096;
+            white-space: nowrap;
+        }
+        
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .nav-tab:hover:not(.active) {
+            background: #f7fafc;
+            color: #4a5568;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .gradient-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .alert-card {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border: 1px solid #fed7d7;
+        }
+        
+        .warning-card {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border: 1px solid #fbd38d;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 25px;
+        }
+        
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+        
+        .metric-card {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-high { background: linear-gradient(90deg, #ff6b6b, #ff8e8e); }
+        .progress-medium { background: linear-gradient(90deg, #ffa726, #ffb74d); }
+        .progress-low { background: linear-gradient(90deg, #66bb6a, #81c784); }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active { background: #c6f6d5; color: #22543d; }
+        .status-partial { background: #fef5e7; color: #975a16; }
+        .status-limited { background: #fed7d7; color: #742a2a; }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -37px;
+            top: 25px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        .timeline-year {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-event {
+            color: #718096;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #a0aec0;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .nav-tabs { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Kenya GHG Accounting Analysis</h1>
+            <p>Examining greenhouse gas accounting frameworks, challenges, and implications for carbon markets</p>
+            <div class="subtitle">Based on national inventory documents and policy analysis | Focus on ASAL contexts</div>
+        </header>
 
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('overview')">📊 Overview</button>
+            <button class="nav-tab" onclick="showTab('challenges')">⚠️ Challenges</button>
+            <button class="nav-tab" onclick="showTab('timeline')">📅 Timeline</button>
+        </nav>
+
+        <main>
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content active">
+                <div class="card gradient-card">
+                    <h2 style="margin-bottom: 20px; font-size: 1.8rem;">Kenya's GHG Accounting Framework</h2>
+                    <p style="margin-bottom: 25px; opacity: 0.9;">
+                        Established under the Climate Change Act 2016, Kenya's GHG accounting system follows IPCC 2006 guidelines 
+                        and coordinates across five main sectors through inter-ministerial working groups.
+                    </p>
+                    <div class="grid grid-3">
+                        <div class="metric-card">
+                            <div class="metric-value">2016</div>
+                            <div class="metric-label">Legal Framework Established</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">5</div>
+                            <div class="metric-label">Sector Working Groups</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">3</div>
+                            <div class="metric-label">Mandatory GHG Gases</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px; color: #2d3748;">Sectoral Emissions Overview</h3>
+                        <div class="chart-container">
+                            <canvas id="sectorChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px; color: #2d3748;">Institutional Framework</h3>
+                        <div style="space-y: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f7fafc; border-radius: 8px; margin-bottom: 10px;">
+                                <div>
+                                    <div style="font-weight: 600; color: #2d3748;">Ministry of Environment, Climate Change & Forestry</div>
+                                    <div style="font-size: 0.8rem; color: #718096;">Lead Coordinator</div>
+                                </div>
+                                <span class="status-badge status-active">Active</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f7fafc; border-radius: 8px; margin-bottom: 10px;">
+                                <div>
+                                    <div style="font-weight: 600; color: #2d3748;">Climate Change Directorate</div>
+                                    <div style="font-size: 0.8rem; color: #718096;">Implementation</div>
+                                </div>
+                                <span class="status-badge status-active">Active</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f7fafc; border-radius: 8px; margin-bottom: 10px;">
+                                <div>
+                                    <div style="font-weight: 600; color: #2d3748;">County Governments</div>
+                                    <div style="font-size: 0.8rem; color: #718096;">Sub-national Data</div>
+                                </div>
+                                <span class="status-badge status-limited">Limited</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f7fafc; border-radius: 8px;">
+                                <div>
+                                    <div style="font-weight: 600; color: #2d3748;">Research Institutions</div>
+                                    <div style="font-size: 0.8rem; color: #718096;">Technical Support</div>
+                                </div>
+                                <span class="status-badge status-partial">Partial</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Challenges Tab -->
+            <div id="challenges" class="tab-content">
+                <div class="alert-card card">
+                    <h2 style="margin-bottom: 15px; color: #742a2a;">🚨 Critical Data Gaps & Challenges</h2>
+                    <p style="color: #742a2a; margin-bottom: 20px;">
+                        Kenya's GHG accounting faces significant challenges that impact the accuracy of carbon credit assessments, 
+                        particularly in arid and semi-arid lands where traditional methodologies may not capture local realities.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; color: #2d3748;">Data Gap Analysis</h3>
+                    <div style="space-y: 15px;">
+                        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h4 style="font-weight: 600; color: #2d3748;">County-level Data</h4>
+                                <span class="status-badge" style="background: #fed7d7; color: #742a2a;">Very High Impact</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-high" style="width: 90%;"></div>
+                            </div>
+                            <p style="color: #718096; font-size: 0.9rem;">Limited sub-national emissions data availability</p>
+                        </div>
+                        
+                        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h4 style="font-weight: 600; color: #2d3748;">Land Use Changes</h4>
+                                <span class="status-badge" style="background: #fed7d7; color: #742a2a;">Very High Impact</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-high" style="width: 85%;"></div>
+                            </div>
+                            <p style="color: #718096; font-size: 0.9rem;">Uncertain land use transition data, especially in ASALs</p>
+                        </div>
+                        
+                        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h4 style="font-weight: 600; color: #2d3748;">Activity Data vs Emissions</h4>
+                                <span class="status-badge" style="background: #fef5e7; color: #975a16;">High Impact</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-medium" style="width: 75%;"></div>
+                            </div>
+                            <p style="color: #718096; font-size: 0.9rem;">Mismatch between reported activities and actual emissions</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-card card">
+                    <h3 style="margin-bottom: 20px; color: #975a16;">🏜️ ASAL-Specific Challenges</h3>
+                    <div class="grid grid-2">
+                        <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                            <h4 style="font-weight: 600; margin-bottom: 8px; color: #2d3748;">Pastoral Systems</h4>
+                            <p style="font-size: 0.9rem; color: #4a5568;">Traditional livestock mobility patterns not captured in static emission calculations</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                            <h4 style="font-weight: 600; margin-bottom: 8px; color: #2d3748;">Dryland Agriculture</h4>
+                            <p style="font-size: 0.9rem; color: #4a5568;">Variable rainfall impacts on crop production and carbon sequestration</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                            <h4 style="font-weight: 600; margin-bottom: 8px; color: #2d3748;">Land Degradation</h4>
+                            <p style="font-size: 0.9rem; color: #4a5568;">Soil carbon loss in degraded areas not adequately monitored</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px;">
+                            <h4 style="font-weight: 600; margin-bottom: 8px; color: #2d3748;">Community Practices</h4>
+                            <p style="font-size: 0.9rem; color: #4a5568;">Indigenous land management practices undervalued in carbon accounting</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline Tab -->
+            <div id="timeline" class="tab-content">
+                <div class="card">
+                    <h2 style="margin-bottom: 30px; color: #2d3748;">GHG Accounting Development Timeline</h2>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-year">2016</div>
+                            <div class="timeline-event">Climate Change Act enacted - Legal framework established</div>
+                            <span class="status-badge" style="background: #e6fffa; color: #234e52;">Legal</span>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">2018</div>
+                            <div class="timeline-event">First National Communication submitted to UNFCCC</div>
+                            <span class="status-badge" style="background: #c6f6d5; color: #22543d;">Report</span>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">2020</div>
+                            <div class="timeline-event">Updated Nationally Determined Contribution (NDC) submitted</div>
+                            <span class="status-badge" style="background: #bee3f8; color: #2a4365;">Policy</span>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">2022</div>
+                            <div class="timeline-event">Enhanced Transparency Framework preparation begins</div>
+                            <span class="status-badge" style="background: #faf5ff; color: #553c9a;">Technical</span>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">2024</div>
+                            <div class="timeline-event">First Biennial Transparency Report due</div>
+                            <span class="status-badge" style="background: #c6f6d5; color: #22543d;">Report</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);">
+                    <h3 style="margin-bottom: 20px; color: #2a4365;">🔮 Future Milestones</h3>
+                    <div style="space-y: 10px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <span style="margin-right: 10px;">📈</span>
+                            <span style="color: #2d3748;">Enhanced Transparency Framework implementation (2024-2025)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <span style="margin-right: 10px;">📍</span>
+                            <span style="color: #2d3748;">County-level GHG inventory development</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="margin-right: 10px;">🛠️</span>
+                            <span style="color: #2d3748;">KCERT tool expansion and public deployment</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Portfolio Project | Natural Resources Management & Climate Policy Analysis</p>
+        </footer>
+    </div>
+
+    <script>
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Initialize chart when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('sectorChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Energy & Transport', 'Agriculture (Crop)', 'Agriculture (Livestock)', 'Forestry & Land Use', 'Waste', 'Industrial Processes'],
+                    datasets: [{
+                        label: 'Mt CO₂ eq',
+                        data: [12.4, 8.7, 15.2, -5.3, 3.1, 2.8],
+                        backgroundColor: [
+                            '#667eea',
+                            '#764ba2',
+                            '#f093fb',
+                            '#f5576c',
+                            '#4facfe',
+                            '#43e97b'
+                        ],
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
