@@ -1,1337 +1,1232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kenya GHG Accounting Analysis - Enhanced</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
-<style>
-* {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-}
-body {
-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-min-height: 100vh;
-padding: 20px;
-}
-.container {
-max-width: 1400px;
-margin: 0 auto;
-}
-.header {
-background: white;
-padding: 30px;
-border-radius: 15px;
-box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-margin-bottom: 30px;
-text-align: center;
-}
-.header h1 {
-color: #2d3748;
-font-size: 2.5rem;
-margin-bottom: 10px;
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
-}
-.header p {
-color: #718096;
-font-size: 1.1rem;
-margin-bottom: 15px;
-}
-.subtitle {
-color: #a0aec0;
-font-size: 0.9rem;
-}
-.nav-tabs {
-background: white;
-border-radius: 15px;
-padding: 10px;
-margin-bottom: 30px;
-box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-display: flex;
-gap: 5px;
-overflow-x: auto;
-}
-.nav-tab {
-padding: 12px 20px;
-border: none;
-background: none;
-border-radius: 10px;
-cursor: pointer;
-font-weight: 500;
-transition: all 0.3s ease;
-color: #718096;
-white-space: nowrap;
-}
-.nav-tab.active {
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-color: white;
-transform: translateY(-2px);
-box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-}
-.nav-tab:hover:not(.active) {
-background: #f7fafc;
-color: #4a5568;
-}
-.tab-content {
-display: none;
-}
-.tab-content.active {
-display: block;
-animation: fadeIn 0.5s ease-in;
-}
-@keyframes fadeIn {
-from { opacity: 0; transform: translateY(10px); }
-to { opacity: 1; transform: translateY(0); }
-}
-.card {
-background: white;
-border-radius: 15px;
-padding: 25px;
-margin-bottom: 25px;
-box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-border: 1px solid rgba(255,255,255,0.2);
-}
-.gradient-card {
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-color: white;
-}
-.alert-card {
-background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-border: 1px solid #fed7d7;
-}
-.warning-card {
-background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-border: 1px solid #fbd38d;
-}
-.success-card {
-background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-border: 1px solid #c3e6cb;
-}
-.grid {
-display: grid;
-gap: 25px;
-}
-.grid-2 {
-grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-}
-.grid-3 {
-grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
-.grid-4 {
-grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-.metric-card {
-text-align: center;
-padding: 20px;
-background: rgba(255,255,255,0.9);
-border-radius: 10px;
-backdrop-filter: blur(10px);
-}
-.metric-value {
-font-size: 2rem;
-font-weight: bold;
-color: #2d3748;
-margin-bottom: 5px;
-}
-.metric-label {
-color: #718096;
-font-size: 0.9rem;
-}
-.chart-container {
-position: relative;
-height: 400px;
-margin: 20px 0;
-}
-.chart-container-small {
-position: relative;
-height: 250px;
-margin: 20px 0;
-}
-.progress-bar {
-background: #e2e8f0;
-border-radius: 10px;
-height: 8px;
-overflow: hidden;
-margin: 10px 0;
-}
-.progress-fill {
-height: 100%;
-border-radius: 10px;
-transition: width 0.5s ease;
-}
-.progress-high { background: linear-gradient(90deg, #ff6b6b, #ff8e8e); }
-.progress-medium { background: linear-gradient(90deg, #ffa726, #ffb74d); }
-.progress-low { background: linear-gradient(90deg, #66bb6a, #81c784); }
-.status-badge {
-padding: 4px 12px;
-border-radius: 20px;
-font-size: 0.8rem;
-font-weight: 500;
-}
-.status-active { background: #c6f6d5; color: #22543d; }
-.status-partial { background: #fef5e7; color: #975a16; }
-.status-limited { background: #fed7d7; color: #742a2a; }
-.timeline {
-position: relative;
-padding-left: 30px;
-}
-.timeline::before {
-content: '';
-position: absolute;
-left: 15px;
-top: 0;
-bottom: 0;
-width: 2px;
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-.timeline-item {
-position: relative;
-margin-bottom: 30px;
-padding: 20px;
-background: white;
-border-radius: 10px;
-box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-.timeline-item::before {
-content: '';
-position: absolute;
-left: -37px;
-top: 25px;
-width: 12px;
-height: 12px;
-border-radius: 50%;
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-border: 3px solid white;
-box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-}
-.timeline-year {
-font-size: 1.2rem;
-font-weight: bold;
-color: #2d3748;
-margin-bottom: 5px;
-}
-.timeline-event {
-color: #718096;
-margin-bottom: 10px;
-}
-.scenario-controls {
-background: #f7fafc;
-padding: 20px;
-border-radius: 10px;
-margin-bottom: 20px;
-}
-.control-group {
-margin-bottom: 15px;
-}
-.control-group label {
-display: block;
-margin-bottom: 5px;
-font-weight: 500;
-color: #2d3748;
-}
-.control-group input[type="range"] {
-width: 100%;
-margin-bottom: 5px;
-}
-.control-group .value-display {
-font-size: 0.9rem;
-color: #718096;
-}
-.county-selector {
-background: white;
-border: 1px solid #e2e8f0;
-border-radius: 8px;
-padding: 10px;
-margin-bottom: 20px;
-}
-.county-selector select {
-width: 100%;
-padding: 8px;
-border: none;
-background: none;
-font-size: 1rem;
-}
-.footer {
-text-align: center;
-padding: 20px;
-color: #a0aec0;
-margin-top: 40px;
-}
-@media (max-width: 768px) {
-.header h1 { font-size: 2rem; }
-.grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-.nav-tabs { flex-wrap: wrap; }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>Kenya GHG Emissions Dashboard - Carbon Finance Analytics</title>
+  <meta
+    name="description"
+    content="Interactive dashboard analyzing Kenya's greenhouse gas emissions for carbon market opportunities"
+  />
+  <meta name="author" content="Stephanie Ojee" />
+  <meta property="og:title" content="Kenya GHG Dashboard" />
+  <meta
+    property="og:description"
+    content="Tracking emissions for carbon finance planning"
+  />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f7f4;
+      min-height: 100vh;
+      padding: 20px;
+      color: #003333;
+    }
+    .container { max-width: 1400px; margin: 0 auto; }
+
+    /* Quick Stats Bar */
+    .quick-stats {
+      background: #006666;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-around;
+      font-size: 0.9rem;
+      flex-wrap: wrap;
+    }
+    .quick-stats span { display: inline-block; margin: 5px; }
+
+    .header {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,51,51,0.1);
+      margin-bottom: 30px;
+      text-align: center;
+      border-top: 4px solid #006666;
+    }
+    .header h1 { color: #003333; font-size: 2.5rem; margin-bottom: 10px; }
+    .header p { color: #004444; font-size: 1.1rem; margin-bottom: 15px; }
+    .subtitle { color: #005555; font-size: 0.9rem; }
+
+    .nav-tabs {
+      background: white;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 10px rgba(0,51,51,0.1);
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+    }
+    .nav-tab {
+      padding: 12px 20px;
+      border: none;
+      background: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      color: #005555;
+      white-space: nowrap;
+    }
+    .nav-tab.active {
+      background: #006666;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,102,102,0.2);
+    }
+    .nav-tab:hover:not(.active) { background: #e6f3f0; color: #003333; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.5s ease-in; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 10px rgba(0,51,51,0.1);
+      border-left: 4px solid #006666;
+    }
+    .card-teal { background: #006666; color: white; }
+    .card-alert { background: #fff5f5; border-left-color: #d55e00; }
+    .card-warning { background: #fffaf0; border-left-color: #e69f00; }
+    .card-success { background: #f0fdf4; border-left-color: #009e73; }
+
+    .grid { display: grid; gap: 25px; }
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+    .metric-card {
+      text-align: center;
+      padding: 20px;
+      background: #f9fffe;
+      border-radius: 8px;
+      border: 1px solid #e6f3f0;
+    }
+    .metric-value { font-size: 2rem; font-weight: bold; color: #003333; margin-bottom: 5px; }
+    .metric-label { color: #005555; font-size: 0.9rem; }
+
+    .chart-container { position: relative; height: 400px; margin: 20px 0; }
+    .chart-container-small { position: relative; height: 250px; margin: 20px 0; }
+
+    .progress-bar {
+      background: #e6f3f0;
+      border-radius: 8px;
+      height: 8px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .progress-fill { height: 100%; border-radius: 8px; transition: width 0.5s ease; }
+    .progress-high { background: #d55e00; }
+    .progress-medium { background: #e69f00; }
+    .progress-low { background: #009e73; }
+
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .status-active { background: #d1fae5; color: #065f46; }
+    .status-partial { background: #fef3c7; color: #92400e; }
+    .status-limited { background: #fee2e2; color: #991b1b; }
+
+    .timeline { position: relative; padding-left: 30px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 15px; top: 0; bottom: 0;
+      width: 2px; background: #006666;
+    }
+    .timeline-item {
+      position: relative; margin-bottom: 30px; padding: 20px;
+      background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,51,51,0.1);
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute; left: -37px; top: 25px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #006666; border: 3px solid white;
+      box-shadow: 0 0 0 3px rgba(0,102,102,0.2);
+    }
+    .timeline-year { font-size: 1.2rem; font-weight: bold; color: #003333; margin-bottom: 5px; }
+    .timeline-event { color: #005555; margin-bottom: 10px; }
+
+    .scenario-controls { background: #f9fffe; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e6f3f0; }
+    .control-group { margin-bottom: 15px; }
+    .control-group label { display: block; margin-bottom: 5px; font-weight: 500; color: #003333; }
+    .control-group input[type="range"] { width: 100%; margin-bottom: 5px; accent-color: #006666; }
+    .control-group .value-display { font-size: 0.9rem; color: #005555; }
+
+    .county-selector {
+      background: white; border: 1px solid #e6f3f0; border-radius: 8px; padding: 10px; margin-bottom: 20px;
+    }
+    .county-selector select {
+      width: 100%; padding: 8px; border: 1px solid #e6f3f0; background: white; font-size: 1rem; color: #003333; border-radius: 4px;
+    }
+
+    .data-source-badge {
+      background: #f0f7f4; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; color: #004444; display: inline-block; margin-top: 10px;
+    }
+    .data-source-badge a { color: #006666; text-decoration: none; font-weight: 500; }
+    .data-source-badge a:hover { text-decoration: underline; }
+
+    .methodology-note {
+      background: #f9fffe; border: 1px solid #e6f3f0; border-radius: 8px; padding: 15px; margin-top: 20px; font-size: 0.9rem; color: #004444;
+    }
+
+    .export-btn {
+      background: #006666; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; margin: 10px; transition: all 0.3s;
+    }
+    .export-btn:hover {
+      background: #007777; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,102,102,0.2);
+    }
+
+    .footer {
+      text-align: center; padding: 30px 20px; color: #005555; margin-top: 40px; background: white; border-radius: 12px; border-top: 4px solid #006666;
+    }
+    .footer .author { font-weight: 600; color: #003333; margin-bottom: 10px; }
+
+    @media (max-width: 768px) {
+      .header h1 { font-size: 2rem; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .nav-tabs { flex-wrap: wrap; }
+      .quick-stats { font-size: 0.8rem; }
+    }
+  </style>
 </head>
+
 <body>
-<div class="container">
-<header class="header">
-<h1>Kenya GHG Accounting Analysis</h1>
-<p>Comprehensive greenhouse gas accounting analysis with real emissions data and scenario modeling</p>
-<div class="subtitle">Enhanced dashboard with county-level data, ASAL focus, and regional comparisons | Updated with 2022 BTR data</div>
-</header>
+  <div class="container">
+    <!-- Quick Stats Bar (emoji-free) -->
+    <div class="quick-stats" aria-label="Quick statistics">
+      <span>Data Coverage: 47/47 counties</span>
+      <span>Last Update: September 2024</span>
+      <span>IPCC 2006 Guidelines</span>
+      <span>Confidence Level: Medium</span>
+    </div>
 
-<nav class="nav-tabs">
-<button class="nav-tab active" onclick="showTab('overview')"> Overview</button>
-<button class="nav-tab" onclick="showTab('emissions')"> Emissions Data</button>
-<button class="nav-tab" onclick="showTab('scenarios')"> Scenarios</button>
-<button class="nav-tab" onclick="showTab('counties')"> Counties</button>
-<button class="nav-tab" onclick="showTab('regional')"> Regional</button>
-<button class="nav-tab" onclick="showTab('carbon')"> Carbon Credits</button>
-<button class="nav-tab" onclick="showTab('challenges')"> Challenges</button>
-<button class="nav-tab" onclick="showTab('timeline')"> Timeline</button>
-</nav>
+    <header class="header">
+      <h1>Kenya GHG Emissions Dashboard</h1>
+      <p>Comprehensive greenhouse gas accounting analysis with carbon finance applications</p>
+      <div class="subtitle">
+        Enhanced dashboard with MRV assessment, regional comparisons &amp; carbon market intelligence | Based on 2024 BTR data
+      </div>
+    </header>
 
-<main>
-<!-- Overview Tab -->
-<div id="overview" class="tab-content active">
-<div class="card gradient-card">
-<h2 style="margin-bottom: 20px; font-size: 1.8rem;">Kenya's GHG Accounting Framework</h2>
-<p style="margin-bottom: 25px; opacity: 0.9;">
-Established under the Climate Change Act 2016, Kenya's GHG accounting system follows IPCC 2006 guidelines and coordinates across five main sectors through inter-ministerial working groups.
-</p>
-<div class="grid grid-4">
-<div class="metric-card">
-<div class="metric-value">113.3</div>
-<div class="metric-label">Mt CO₂eq Total (2022)</div>
-</div>
-<div class="metric-card">
-<div class="metric-value">47</div>
-<div class="metric-label">Counties Covered</div>
-</div>
-<div class="metric-card">
-<div class="metric-value">23</div>
-<div class="metric-label">ASAL Counties</div>
-</div>
-<div class="metric-card">
-<div class="metric-value">200+</div>
-<div class="metric-label">Active Carbon Projects</div>
-</div>
-</div>
-</div>
+    <nav class="nav-tabs" role="tablist" aria-label="Dashboard sections">
+      <button class="nav-tab active" data-tab="overview" aria-selected="true">Overview</button>
+      <button class="nav-tab" data-tab="emissions" aria-selected="false">Emissions Data</button>
+      <button class="nav-tab" data-tab="scenarios" aria-selected="false">Scenarios</button>
+      <button class="nav-tab" data-tab="counties" aria-selected="false">Counties</button>
+      <button class="nav-tab" data-tab="regional" aria-selected="false">Regional</button>
+      <button class="nav-tab" data-tab="carbon" aria-selected="false">Carbon Credits</button>
+      <button class="nav-tab" data-tab="mrv" aria-selected="false">MRV System</button>
+      <button class="nav-tab" data-tab="challenges" aria-selected="false">Challenges</button>
+      <button class="nav-tab" data-tab="timeline" aria-selected="false">Timeline</button>
+    </nav>
 
-<div class="grid grid-2">
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">National Emissions by Sector (2020)</h3>
-<div class="chart-container">
-<canvas id="sectorChart"></canvas>
-</div>
-</div>
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">Emissions Trend (2010-2020)</h3>
-<div class="chart-container">
-<canvas id="trendChart"></canvas>
-</div>
-</div>
-</div>
-</div>
+    <main>
+      <!-- Overview Tab -->
+      <section id="overview" class="tab-content active">
+        <div class="card card-teal">
+          <h2 style="margin-bottom: 20px; font-size: 1.8rem;">Kenya's GHG Accounting Framework</h2>
+          <p style="margin-bottom: 25px; opacity: 0.95;">
+            Established under the Climate Change Act 2016, Kenya's GHG accounting system follows IPCC 2006 guidelines with plans to transition to IPCC 2019 refinement. The framework coordinates across five main sectors through inter-ministerial working groups.
+          </p>
+          <div class="grid grid-4">
+            <div class="metric-card">
+              <div class="metric-value">113.3</div>
+              <div class="metric-label">Mt CO₂eq Total (2022)</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value">47</div>
+              <div class="metric-label">Counties Covered</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value">23</div>
+              <div class="metric-label">ASAL Counties</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value">200+</div>
+              <div class="metric-label">Active Carbon Projects</div>
+            </div>
+          </div>
+        </div>
 
-<!-- Emissions Data Tab -->
-<div id="emissions" class="tab-content">
-<div class="card">
-<h2 style="margin-bottom: 20px; color: #2d3748;">Detailed Emissions Analysis</h2>
-<div class="grid grid-2">
-<div class="card">
-<h3 style="margin-bottom: 15px; color: #2d3748;">Sectoral Breakdown (Mt CO₂eq)</h3>
-<div class="chart-container">
-<canvas id="detailedSectorChart"></canvas>
-</div>
-</div>
-<div class="card">
-<h3 style="margin-bottom: 15px; color: #2d3748;">GHG Gas Composition</h3>
-<div class="chart-container">
-<canvas id="gasChart"></canvas>
-</div>
-</div>
-</div>
-</div>
+        <div class="grid grid-2">
+          <div class="card">
+            <h3 style="margin-bottom: 20px; color: #003333;">National Emissions by Sector (2022)</h3>
+            <div class="chart-container">
+              <canvas id="sectorChart" role="img" aria-label="Bar chart of national emissions by sector"></canvas>
+            </div>
+            <div class="data-source-badge">
+              Source: <a href="https://unfccc.int/documents/636608" target="_blank" rel="noopener">Kenya BTR 2024</a>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom: 20px; color: #003333;">Emissions Trend (2010–2022)</h3>
+            <div class="chart-container">
+              <canvas id="trendChart" role="img" aria-label="Line chart of total emissions trend"></canvas>
+            </div>
+            <button class="export-btn" onclick="exportChart('trendChart')">Export Chart</button>
+          </div>
+        </div>
+      </section>
 
-<div class="grid grid-3">
-<div class="card success-card">
-<h4 style="color: #22543d; margin-bottom: 15px;">🌱 Carbon Sinks</h4>
-<div class="metric-value" style="color: #22543d;">-18.3</div>
-<div class="metric-label" style="color: #22543d;">Mt CO₂eq from Forestry</div>
-<p style="color: #22543d; font-size: 0.9rem; margin-top: 10px;">Forest carbon sequestration partially offsets national emissions</p>
-</div>
-<div class="card alert-card">
-<h4 style="color: #742a2a; margin-bottom: 15px;">🐄 Livestock Emissions</h4>
-<div class="metric-value" style="color: #742a2a;">34.2</div>
-<div class="metric-label" style="color: #742a2a;">Mt CO₂eq from Livestock</div>
-<p style="color: #742a2a; font-size: 0.9rem; margin-top: 10px;">Largest single emission source, mainly from cattle</p>
-</div>
-<div class="card warning-card">
-<h4 style="color: #975a16; margin-bottom: 15px;">⚡ Energy Growth</h4>
-<div class="metric-value" style="color: #975a16;">+4.2%</div>
-<div class="metric-label" style="color: #975a16;">Annual Growth Rate</div>
-<p style="color: #975a16; font-size: 0.9rem; margin-top: 10px;">Fastest growing emissions sector</p>
-</div>
-</div>
-</div>
+      <!-- Emissions Data Tab -->
+      <section id="emissions" class="tab-content" aria-hidden="true">
+        <div class="card">
+          <h2 style="margin-bottom: 20px; color: #003333;">Detailed Emissions Analysis</h2>
+          <div class="grid grid-2">
+            <div class="card">
+              <h3 style="margin-bottom: 15px; color: #003333;">Sectoral Breakdown (Mt CO₂eq)</h3>
+              <div class="chart-container">
+                <canvas id="detailedSectorChart" role="img" aria-label="Doughnut chart of sectoral breakdown in megatonnes"></canvas>
+              </div>
+            </div>
+            <div class="card">
+              <h3 style="margin-bottom: 15px; color: #003333;">GHG Gas Composition</h3>
+              <div class="chart-container">
+                <canvas id="gasChart" role="img" aria-label="Pie chart of gas composition: CO2, CH4, N2O"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
 
-<!-- Scenarios Tab -->
-<div id="scenarios" class="tab-content">
-<div class="card">
-<h2 style="margin-bottom: 20px; color: #2d3748;">Scenario Analysis Tool</h2>
-<p style="color: #718096; margin-bottom: 20px;">Adjust parameters to model different emissions scenarios based on policy interventions and development pathways.</p>
-</div>
+        <div class="grid grid-3">
+          <div class="card card-success">
+            <h4 style="color: #065f46; margin-bottom: 15px;">Carbon Sinks</h4>
+            <div class="metric-value" style="color: #065f46;">-18.3</div>
+            <div class="metric-label" style="color: #065f46;">Mt CO₂eq from Forestry</div>
+            <p style="color: #065f46; font-size: 0.9rem; margin-top: 10px;">Forest carbon sequestration partially offsets national emissions</p>
+          </div>
+          <div class="card card-alert">
+            <h4 style="color: #991b1b; margin-bottom: 15px;">Livestock Emissions</h4>
+            <div class="metric-value" style="color: #991b1b;">34.2</div>
+            <div class="metric-label" style="color: #991b1b;">Mt CO₂eq from Livestock</div>
+            <p style="color: #991b1b; font-size: 0.9rem; margin-top: 10px;">Largest single emission source, mainly from cattle</p>
+          </div>
+          <div class="card card-warning">
+            <h4 style="color: #92400e; margin-bottom: 15px;">Energy Growth</h4>
+            <div class="metric-value" style="color: #92400e;">+4.2%</div>
+            <div class="metric-label" style="color: #92400e;">Annual Growth Rate</div>
+            <p style="color: #92400e; font-size: 0.9rem; margin-top: 10px;">Fastest growing emissions sector</p>
+          </div>
+        </div>
+      </section>
 
-<div class="grid grid-2">
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">Scenario Parameters</h3>
-<div class="scenario-controls">
-<div class="control-group">
-<label>Economic Growth Rate (%)</label>
-<input type="range" id="economicGrowth" min="2" max="8" value="5" step="0.5" oninput="updateScenario()">
-<div class="value-display">Current: <span id="economicGrowthValue">5.0</span>%</div>
-</div>
-<div class="control-group">
-<label>Renewable Energy Share (%)</label>
-<input type="range" id="renewableShare" min="10" max="90" value="30" step="5" oninput="updateScenario()">
-<div class="value-display">Current: <span id="renewableShareValue">30</span>%</div>
-</div>
-<div class="control-group">
-<label>Forest Cover Change (%)</label>
-<input type="range" id="forestCover" min="-20" max="50" value="10" step="5" oninput="updateScenario()">
-<div class="value-display">Current: <span id="forestCoverValue">+10</span>%</div>
-</div>
-<div class="control-group">
-<label>Livestock Efficiency Improvement (%)</label>
-<input type="range" id="livestockEfficiency" min="0" max="40" value="15" step="5" oninput="updateScenario()">
-<div class="value-display">Current: <span id="livestockEfficiencyValue">15</span>%</div>
-</div>
-</div>
-</div>
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">Projected Emissions (2030)</h3>
-<div class="chart-container">
-<canvas id="scenarioChart"></canvas>
-</div>
-</div>
-</div>
+      <!-- Scenarios Tab -->
+      <section id="scenarios" class="tab-content" aria-hidden="true">
+        <div class="card">
+          <h2 style="margin-bottom: 20px; color: #003333;">Scenario Analysis Tool</h2>
+          <p style="color: #005555; margin-bottom: 20px;">Adjust parameters to model different emissions scenarios based on policy interventions and development pathways.</p>
+        </div>
 
-<div class="card gradient-card">
-<h3 style="margin-bottom: 20px;">Scenario Results Summary</h3>
-<div class="grid grid-3">
-<div class="metric-card">
-<div class="metric-value" id="projectedTotal">105.2</div>
-<div class="metric-label">Total Mt CO₂eq (2030)</div>
-</div>
-<div class="metric-card">
-<div class="metric-value" id="emissionReduction">-12.4</div>
-<div class="metric-label">vs BAU Scenario</div>
-</div>
-<div class="metric-card">
-<div class="metric-value" id="ndcAlignment">78%</div>
-<div class="metric-label">NDC Target Alignment</div>
-</div>
-</div>
-</div>
-</div>
+        <div class="grid grid-2">
+          <div class="card">
+            <h3 style="margin-bottom: 20px; color: #003333;">Scenario Parameters</h3>
+            <div class="scenario-controls">
+              <div class="control-group">
+                <label for="economicGrowth">Economic Growth Rate (%)</label>
+                <input type="range" id="economicGrowth" min="2" max="8" value="5" step="0.5" oninput="updateScenario()">
+                <div class="value-display">Current: <span id="economicGrowthValue">5.0</span>%</div>
+              </div>
+              <div class="control-group">
+                <label for="renewableShare">Renewable Energy Share (%)</label>
+                <input type="range" id="renewableShare" min="10" max="90" value="30" step="5" oninput="updateScenario()">
+                <div class="value-display">Current: <span id="renewableShareValue">30</span>%</div>
+              </div>
+              <div class="control-group">
+                <label for="forestCover">Forest Cover Change (%)</label>
+                <input type="range" id="forestCover" min="-20" max="50" value="10" step="5" oninput="updateScenario()">
+                <div class="value-display">Current: <span id="forestCoverValue">+10</span>%</div>
+              </div>
+              <div class="control-group">
+                <label for="livestockEfficiency">Livestock Efficiency Improvement (%)</label>
+                <input type="range" id="livestockEfficiency" min="0" max="40" value="15" step="5" oninput="updateScenario()">
+                <div class="value-display">Current: <span id="livestockEfficiencyValue">15</span>%</div>
+              </div>
+            </div>
+          </div>
 
-<!-- Counties Tab -->
-<div id="counties" class="tab-content">
-<div class="card">
-<h2 style="margin-bottom: 20px; color: #2d3748;">County-Level Analysis</h2>
-<div class="county-selector">
-<select id="countySelect" onchange="updateCountyData()">
-<option value="all">All Counties Overview</option>
-<option value="turkana">Turkana (ASAL)</option>
-<option value="marsabit">Marsabit (ASAL)</option>
-<option value="garissa">Garissa (ASAL)</option>
-<option value="mandera">Mandera (ASAL)</option>
-<option value="wajir">Wajir (ASAL)</option>
-<option value="kajiado">Kajiado (ASAL)</option>
-<option value="nairobi">Nairobi</option>
-<option value="kiambu">Kiambu</option>
-<option value="nakuru">Nakuru</option>
-<option value="mombasa">Mombasa</option>
-</select>
-</div>
-</div>
+          <div class="card">
+            <h3 style="margin-bottom: 20px; color: #003333;">Projected Emissions (2030)</h3>
+            <div class="chart-container">
+              <canvas id="scenarioChart" role="img" aria-label="Bar chart comparing current vs projected emissions by sector"></canvas>
+            </div>
+          </div>
+        </div>
 
-<div class="grid grid-2">
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">ASAL Counties Emissions Profile</h3>
-<div class="chart-container">
-<canvas id="asalChart"></canvas>
-</div>
-</div>
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">County Emissions per Capita</h3>
-<div class="chart-container">
-<canvas id="perCapitaChart"></canvas>
-</div>
-</div>
-</div>
+        <div class="card card-teal">
+          <h3 style="margin-bottom: 20px;">Scenario Results Summary</h3>
+          <div class="grid grid-3">
+            <div class="metric-card">
+              <div class="metric-value" id="projectedTotal">105.2</div>
+              <div class="metric-label">Total Mt CO₂eq (2030)</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value" id="emissionReduction">-12.4</div>
+              <div class="metric-label">vs BAU Scenario</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value" id="ndcAlignment">78%</div>
+              <div class="metric-label">NDC Target Alignment</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<div class="card warning-card">
-<h3 style="margin-bottom: 20px; color: #975a16;">🏜️ ASAL-Specific Challenges</h3>
-<div class="grid grid-2">
-<div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-<h4 style="font-weight: 600; margin-bottom: 8px; color: #2d3748;">Pastoral Mobility</h4>
-<p style="font-size: 0.9rem; color: #4a5568;">23 ASAL counties with complex livestock movement patterns affecting emission calculations</p>
-</div>
-<div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-<h4 style="font-weight: 600; margin-bottom: 8px; color: #2d3748;">Land Use Dynamics</h4>
-<p style="font-size: 0.9rem; color: #4a5568;">Rapid land use changes in peri-urban ASAL areas not captured in static models</p>
-</div>
-<div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-<h4 style="font-weight: 600; margin-bottom: 8px; color: #2d3748;">Climate Variability</h4>
-<p style="font-size: 0.9rem; color: #4a5568;">High rainfall variability affects carbon sequestration estimates</p>
-</div>
-<div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px;">
-<h4 style="font-weight: 600; margin-bottom: 8px; color: #2d3748;">Data Gaps</h4>
-<p style="font-size: 0.9rem; color: #4a5568;">Limited county-level activity data and monitoring infrastructure</p>
-</div>
-</div>
-</div>
-</div>
+      <!-- Counties Tab -->
+      <section id="counties" class="tab-content" aria-hidden="true">
+        <div class="card">
+          <h2 style="margin-bottom: 20px; color: #003333;">County-Level Analysis</h2>
+          <div class="county-selector">
+            <label for="countySelect" class="sr-only">Select county</label>
+            <select id="countySelect" onchange="updateCountyData()">
+              <option value="all">All Counties Overview</option>
+              <option value="turkana">Turkana (ASAL)</option>
+              <option value="marsabit">Marsabit (ASAL)</option>
+              <option value="garissa">Garissa (ASAL)</option>
+              <option value="mandera">Mandera (ASAL)</option>
+              <option value="wajir">Wajir (ASAL)</option>
+              <option value="kajiado">Kajiado (ASAL)</option>
+              <option value="nairobi">Nairobi</option>
+              <option value="kiambu">Kiambu</option>
+              <option value="nakuru">Nakuru</option>
+              <option value="mombasa">Mombasa</option>
+            </select>
+          </div>
+        </div>
 
-<!-- Regional Tab -->
-<div id="regional" class="tab-content">
-<div class="card">
-<h2 style="margin-bottom: 20px; color: #2d3748;">East African Regional Comparison</h2>
-<div class="chart-container">
-<canvas id="regionalChart"></canvas>
-</div>
-</div>
+        <div class="grid grid-2">
+          <div class="card">
+            <h3 style="margin-bottom: 20px; color: #003333;">ASAL Counties Emissions Profile</h3>
+            <div class="chart-container">
+              <canvas id="asalChart" role="img" aria-label="Bar chart of ASAL county emissions"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom: 20px; color: #003333;">County Emissions per Capita</h3>
+            <div class="chart-container">
+              <canvas id="perCapitaChart" role="img" aria-label="Scatter plot of county population vs per capita emissions"></canvas>
+            </div>
+          </div>
+        </div>
 
-<div class="grid grid-3">
-<div class="card">
-<h3 style="margin-bottom: 15px; color: #2d3748;">🇰🇪 Kenya</h3>
-<div class="metric-value">87.6</div>
-<div class="metric-label">Mt CO₂eq (2020)</div>
-<div style="margin-top: 15px;">
-<div style="font-size: 0.9rem; color: #718096;">Per capita: 1.8 t CO₂eq</div>
-<div style="font-size: 0.9rem; color: #718096;">Main source: Livestock</div>
-</div>
-</div>
-<div class="card">
-<h3 style="margin-bottom: 15px; color: #2d3748;">🇪🇹 Ethiopia</h3>
-<div class="metric-value">180.2</div>
-<div class="metric-label">Mt CO₂eq (2020)</div>
-<div style="margin-top: 15px;">
-<div style="font-size: 0.9rem; color: #718096;">Per capita: 1.6 t CO₂eq</div>
-<div style="font-size: 0.9rem; color: #718096;">Main source: Agriculture</div>
-</div>
-</div>
-<div class="card">
-<h3 style="margin-bottom: 15px; color: #2d3748;">🇹🇿 Tanzania</h3>
-<div class="metric-value">98.4</div>
-<div class="metric-label">Mt CO₂eq (2020)</div>
-<div style="margin-top: 15px;">
-<div style="font-size: 0.9rem; color: #718096;">Per capita: 1.7 t CO₂eq</div>
-<div style="font-size: 0.9rem; color: #718096;">Main source: LULUCF</div>
-</div>
-</div>
-</div>
+        <div class="card card-warning">
+          <h3 style="margin-bottom: 20px; color: #92400e;">ASAL-Specific Challenges</h3>
+          <div class="grid grid-2">
+            <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+              <h4 style="font-weight: 600; margin-bottom: 8px; color: #003333;">Pastoral Mobility</h4>
+              <p style="font-size: 0.9rem; color: #004444;">23 ASAL counties with complex livestock movement patterns affecting emission calculations</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+              <h4 style="font-weight: 600; margin-bottom: 8px; color: #003333;">Land Use Dynamics</h4>
+              <p style="font-size: 0.9rem; color: #004444;">Rapid land use changes in peri-urban ASAL areas not captured in static models</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+              <h4 style="font-weight: 600; margin-bottom: 8px; color: #003333;">Climate Variability</h4>
+              <p style="font-size: 0.9rem; color: #004444;">High rainfall variability affects carbon sequestration estimates</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px;">
+              <h4 style="font-weight: 600; margin-bottom: 8px; color: #003333;">Data Gaps</h4>
+              <p style="font-size: 0.9rem; color: #004444;">Limited county-level activity data and monitoring infrastructure</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">Regional Trends & Insights</h3>
-<div class="grid grid-2">
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">Livestock Dominance</h4>
-<p style="color: #718096; font-size: 0.9rem;">All East African countries show high livestock emissions, with Kenya having the highest per-capita livestock emissions in the region</p>
-</div>
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">Forest Carbon Potential</h4>
-<p style="color: #718096; font-size: 0.9rem;">Kenya shows moderate forest carbon sink potential compared to Ethiopia and Tanzania's larger forest resources</p>
-</div>
-</div>
-</div>
-</div>
+      <!-- Regional Tab -->
+      <section id="regional" class="tab-content" aria-hidden="true">
+        <div class="card">
+          <h2 style="margin-bottom: 20px; color: #003333;">East African &amp; Southeast Asian Comparison</h2>
+          <div class="chart-container">
+            <canvas id="regionalChart" role="img" aria-label="Bar chart of regional total emissions comparison"></canvas>
+          </div>
+        </div>
 
-<!-- Carbon Credits Tab -->
-<!-- Enhanced Carbon Credits Tab with Detailed Project Classifications -->
-<!-- Carbon Credits Tab -->
-<div id="carbon" class="tab-content">
-<div class="card gradient-card">
-<h2 style="margin-bottom: 20px;">Carbon Credit Projects in Kenya</h2>
-<!-- New Regulatory Framework Section -->
-<div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-<h4 style="margin-bottom: 10px;">🏛️ New Regulatory Framework (2024)</h4>
-<p style="opacity: 0.9; margin-bottom: 10px;">Climate Change (Carbon Markets) Regulations 2024 effective May 17, 2024</p>
-<p style="opacity: 0.9;">National Carbon Registry operational • Enhanced benefit-sharing requirements</p>
-</div>
-<div class="grid grid-4">
-<div class="metric-card">
-<div class="metric-value">200+</div>
-<div class="metric-label">Active Projects</div>
-</div>
-<div class="metric-card">
-<div class="metric-value">11M+</div>
-<div class="metric-label">Credits Issued (2022)</div>
-</div>
-<div class="metric-card">
-<div class="metric-value">70%</div>
-<div class="metric-label">In ASAL Counties</div>
-</div>
-<div class="metric-card">
-<div class="metric-value">$35</div>
-<div class="metric-label">Premium Price/tonne</div>
-</div>
-</div>
-</div>
+        <div class="grid grid-4">
+          <div class="card">
+            <h3 style="margin-bottom: 15px; color: #003333;">Kenya</h3>
+            <div class="metric-value">87.6</div>
+            <div class="metric-label">Mt CO₂eq (2020)</div>
+            <div style="margin-top: 15px;">
+              <div style="font-size: 0.9rem; color: #005555;">Per capita: 1.8 t CO₂eq</div>
+              <div style="font-size: 0.9rem; color: #005555;">Main source: Livestock</div>
+              <div style="font-size: 0.9rem; color: #005555;">Carbon projects: 200+</div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom: 15px; color: #003333;">Vietnam</h3>
+            <div class="metric-value" style="color: #007777;">316.0</div>
+            <div class="metric-label">Mt CO₂eq (2020)</div>
+            <div style="margin-top: 15px;">
+              <div style="font-size: 0.9rem; color: #005555;">Per capita: 3.2 t CO₂eq</div>
+              <div style="font-size: 0.9rem; color: #005555;">Main source: Energy</div>
+              <div style="font-size: 0.9rem; color: #007777; font-weight: 600;">Carbon Market: Emerging</div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom: 15px; color: #003333;">Ethiopia</h3>
+            <div class="metric-value">180.2</div>
+            <div class="metric-label">Mt CO₂eq (2020)</div>
+            <div style="margin-top: 15px;">
+              <div style="font-size: 0.9rem; color: #005555;">Per capita: 1.6 t CO₂eq</div>
+              <div style="font-size: 0.9rem; color: #005555;">Main source: Agriculture</div>
+              <div style="font-size: 0.9rem; color: #005555;">Carbon projects: 50+</div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom: 15px; color: #003333;">Tanzania</h3>
+            <div class="metric-value">98.4</div>
+            <div class="metric-label">Mt CO₂eq (2020)</div>
+            <div style="margin-top: 15px;">
+              <div style="font-size: 0.9rem; color: #005555;">Per capita: 1.7 t CO₂eq</div>
+              <div style="font-size: 0.9rem; color: #005555;">Main source: LULUCF</div>
+              <div style="font-size: 0.9rem; color: #005555;">Carbon projects: 30+</div>
+            </div>
+          </div>
+        </div>
 
-<!-- Global Performance Section -->
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">🌍 Global Performance & Rankings</h3>
-<div class="grid grid-3">
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">🥈 2nd in Africa</h4>
-<p style="color: #718096; font-size: 0.9rem;">Largest issuer of voluntary carbon market credits in Africa (2022), trailing only DRC</p>
-</div>
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">🌱 8th Globally</h4>
-<p style="color: #718096; font-size: 0.9rem;">8th worldwide for 12% of global nature-based solution credit issuances</p>
-</div>
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">💰 Premium Pricing</h4>
-<p style="color: #718096; font-size: 0.9rem;">Clean cookstove projects achieving $35/tonne vs $4-10 average in Africa</p>
-</div>
-</div>
-</div>
+        <div class="card">
+          <h3 style="margin-bottom: 20px; color: #003333;">Regional Insights &amp; Carbon Market Potential</h3>
+          <div class="grid grid-2">
+            <div style="border: 1px solid #e6f3f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+              <h4 style="font-weight: 600; color: #003333; margin-bottom: 10px;">Kenya vs Vietnam Opportunity</h4>
+              <p style="color: #005555; font-size: 0.9rem;">Kenya's experience with 200+ carbon projects provides valuable lessons for Vietnam's emerging market. Key transferable expertise: community engagement models, MRV systems, and nature-based solutions.</p>
+            </div>
+            <div style="border: 1px solid #e6f3f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+              <h4 style="font-weight: 600; color: #003333; margin-bottom: 10px;">Forest Carbon Potential</h4>
+              <p style="color: #005555; font-size: 0.9rem;">Vietnam's extensive forest resources (14.7M ha) present significant REDD+ opportunities similar to Kenya's rangeland carbon projects.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<!-- Detailed Project Types Section -->
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">📊 Project Types Distribution (200+ Active Projects)</h3>
-<div class="chart-container">
-<canvas id="carbonProjectsDetailedChart"></canvas>
-</div>
-</div>
+      <!-- Carbon Credits Tab -->
+      <section id="carbon" class="tab-content" aria-hidden="true">
+        <div class="card card-teal">
+          <h2 style="margin-bottom: 20px;">Carbon Credit Projects in Kenya</h2>
+          <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <h4 style="margin-bottom: 10px;">New Regulatory Framework (2024)</h4>
+            <p style="opacity: 0.95; margin-bottom: 10px;">Climate Change (Carbon Markets) Regulations 2024 effective May 17, 2024</p>
+            <p style="opacity: 0.95;">National Carbon Registry operational • Enhanced benefit-sharing requirements • Aligned with Article 6</p>
+          </div>
+          <div class="grid grid-4">
+            <div class="metric-card">
+              <div class="metric-value">200+</div>
+              <div class="metric-label">Active Projects</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value">11M+</div>
+              <div class="metric-label">Credits Issued (2022)</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value">70%</div>
+              <div class="metric-label">In ASAL Counties</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value">$35</div>
+              <div class="metric-label">Premium Price/tonne</div>
+            </div>
+          </div>
+        </div>
 
-<!-- Project Categories Breakdown -->
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">🗂️ Detailed Project Categories</h3>
-<div class="grid grid-2">
-<!-- Forestry & Land Use Projects -->
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 15px;">🌳 Forestry & Land Use (35%)</h4>
-<div style="margin-bottom: 10px;">
-<span style="background: #43e97b; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">70 Projects</span>
-</div>
-<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem; color: #4a5568;">
-<li><strong>Northern Rangeland Trust:</strong> World's largest soil carbon project (50M tonnes over 30 years)</li>
-<li><strong>Kasigau Wildlife Corridor REDD+:</strong> First voluntary forestry credits in Kenya</li>
-<li><strong>Sustainable Grassland Management:</strong> Multiple ASAL projects</li>
-<li><strong>Forest Regeneration:</strong> Community-based restoration</li>
-<li><strong>REDD+ Initiatives:</strong> Avoiding deforestation projects</li>
-</ul>
-<p style="font-size: 0.8rem; color: #718096; margin-top: 10px;">
-<strong>Major Buyers:</strong> Netflix, Apple, Shell, Delta Airlines
-</p>
-</div>
+        <div class="card">
+          <h3 style="margin-bottom: 20px; color: #003333;">Project Types Distribution</h3>
+          <div class="chart-container">
+            <canvas id="carbonProjectsChart" role="img" aria-label="Doughnut chart of carbon project types distribution"></canvas>
+          </div>
+        </div>
 
-<!-- Cookstove Projects -->
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 15px;">🔥 Clean Cookstoves (25%)</h4>
-<div style="margin-bottom: 10px;">
-<span style="background: #ffa726; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">50 Projects</span>
-</div>
-<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem; color: #4a5568;">
-<li><strong>EcoSafi Kenya:</strong> Biomass gasification ($35/tonne premium pricing)</li>
-<li><strong>Burn Manufacturing:</strong> Industrial scale clean cookstoves</li>
-<li><strong>Hongera Project:</strong> Energy efficient household stoves</li>
-<li><strong>Community Distribution:</strong> Free/subsidized stove programs</li>
-<li><strong>Biomass Pellets:</strong> Renewable fuel production</li>
-</ul>
-<p style="font-size: 0.8rem; color: #718096; margin-top: 10px;">
-<strong>Impact:</strong> 2M+ households, reduced indoor air pollution
-</p>
-</div>
+        <div class="card">
+          <h3 style="margin-bottom: 20px; color: #003333;">2024 Benefit-Sharing Requirements</h3>
+          <div class="grid grid-2">
+            <div style="border: 2px solid #006666; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+              <h4 style="font-weight: 600; color: #003333; margin-bottom: 10px;">Land-based Projects</h4>
+              <div style="text-align: center; margin: 15px 0;">
+                <span style="font-size: 2rem; font-weight: bold; color: #003333;">40%</span>
+                <p style="color: #005555; font-size: 0.9rem; margin: 5px 0;">of annual earnings to communities</p>
+              </div>
+              <p style="color: #005555; font-size: 0.9rem;">Includes forestry, agriculture, REDD+, and land use projects</p>
+            </div>
 
-<!-- Agriculture Projects -->
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 15px;">🌾 Agriculture (20%)</h4>
-<div style="margin-bottom: 10px;">
-<span style="background: #4ecdc4; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">40 Projects</span>
-</div>
-<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem; color: #4a5568;">
-<li><strong>Kenya Agricultural Carbon Project:</strong> 30,000 smallholder farmers</li>
-<li><strong>Sustainable Land Management:</strong> Soil carbon sequestration</li>
-<li><strong>Agroforestry Systems:</strong> Tree-crop integration</li>
-<li><strong>Climate-Smart Agriculture:</strong> Reduced tillage practices</li>
-<li><strong>Composting Programs:</strong> Organic waste management</li>
-</ul>
-<p style="font-size: 0.8rem; color: #718096; margin-top: 10px;">
-<strong>Coverage:</strong> 22,000 hectares, Western & Nyanza provinces
-</p>
-</div>
+            <div style="border: 2px solid #006666; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+              <h4 style="font-weight: 600; color: #003333; margin-bottom: 10px;">Non-land Projects</h4>
+              <div style="text-align: center; margin: 15px 0;">
+                <span style="font-size: 2rem; font-weight: bold; color: #003333;">25%</span>
+                <p style="color: #005555; font-size: 0.9rem; margin: 5px 0;">of annual earnings to communities</p>
+              </div>
+              <p style="color: #005555; font-size: 0.9rem;">Includes cookstoves, solar, clean energy, and technology projects</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<!-- Energy Projects -->
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 15px;">⚡ Clean Energy (10%)</h4>
-<div style="margin-bottom: 10px;">
-<span style="background: #667eea; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">20 Projects</span>
-</div>
-<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem; color: #4a5568;">
-<li><strong>Solar Home Systems:</strong> Off-grid lighting solutions</li>
-<li><strong>Mini-grids:</strong> Rural electrification projects</li>
-<li><strong>Solar Water Pumping:</strong> Agricultural irrigation</li>
-<li><strong>Biogas Digesters:</strong> Waste-to-energy systems</li>
-<li><strong>Wind Projects:</strong> Small-scale wind generation</li>
-</ul>
-<p style="font-size: 0.8rem; color: #718096; margin-top: 10px;">
-<strong>Focus:</strong> Rural ASAL communities, off-grid solutions
-</p>
-</div>
+      <!-- MRV System Tab -->
+      <section id="mrv" class="tab-content" aria-hidden="true">
+        <div class="card">
+          <h2 style="margin-bottom: 20px; color: #003333;">MRV System Maturity Assessment</h2>
+          <p style="color: #005555; margin-bottom: 20px;">Monitoring, Reporting, and Verification system capabilities critical for carbon market participation</p>
+        </div>
 
-<!-- Blue Carbon Projects -->
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 15px;">🌊 Blue Carbon (5%)</h4>
-<div style="margin-bottom: 10px;">
-<span style="background: #0ea5e9; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">10 Projects</span>
-</div>
-<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem; color: #4a5568;">
-<li><strong>Mikoko Pamoja:</strong> World's first blue carbon project (Gazi Bay)</li>
-<li><strong>Mangrove Restoration:</strong> Coastal ecosystem protection</li>
-<li><strong>Seaweed Farming:</strong> Marine carbon sequestration</li>
-<li><strong>Wetland Conservation:</strong> Inland water carbon storage</li>
-<li><strong>Coastal Protection:</strong> Sea level rise adaptation</li>
-</ul>
-<p style="font-size: 0.8rem; color: #718096; margin-top: 10px;">
-<strong>Location:</strong> 5 coastal counties (Kwale, Mombasa, Kilifi, Tana River, Lamu)
-</p>
-</div>
+        <div class="card">
+          <h3 style="margin-bottom: 20px; color: #003333;">System Components Assessment</h3>
+          <div style="space-y: 15px;">
+            <div style="border: 1px solid #e6f3f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="font-weight: 600; color: #003333;">Data Collection Infrastructure</h4>
+                <span class="status-badge status-partial">Developing</span>
+              </div>
+              <div class="progress-bar" aria-label="Data Collection Infrastructure 60%">
+                <div class="progress-fill progress-medium" style="width: 60%;"></div>
+              </div>
+              <p style="color: #005555; font-size: 0.9rem;">National GHG inventory system operational, county-level systems in development</p>
+            </div>
 
-<!-- Transport & Technology -->
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 15px;">🚗 Transport & Tech (5%)</h4>
-<div style="margin-bottom: 10px;">
-<span style="background: #8b5cf6; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">10 Projects</span>
-</div>
-<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem; color: #4a5568;">
-<li><strong>Electric Vehicles:</strong> E-bus fleets in Nairobi</li>
-<li><strong>Green Transport:</strong> Sustainable logistics</li>
-<li><strong>Water Purification:</strong> Clean water technology</li>
-<li><strong>Digital Platforms:</strong> Carbon tracking systems</li>
-<li><strong>Smart Agriculture:</strong> IoT-based farming solutions</li>
-</ul>
-<p style="font-size: 0.8rem; color: #718096; margin-top: 10px;">
-<strong>Innovation:</strong> Kenya's tech sector entering carbon markets
-</p>
-</div>
-</div>
-</div>
+            <div style="border: 1px solid #e6f3f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="font-weight: 600; color: #003333;">Reporting Frequency</h4>
+                <span class="status-badge status-active">Compliant</span>
+              </div>
+              <div class="progress-bar" aria-label="Reporting Frequency 85%">
+                <div class="progress-fill progress-low" style="width: 85%;"></div>
+              </div>
+              <p style="color: #005555; font-size: 0.9rem;">Biennial reports submitted, annual inventories for key sectors</p>
+            </div>
 
-<!-- Major Project Showcase -->
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">🏆 Flagship Projects</h3>
-<div class="grid grid-2">
-<div style="background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
-<h4 style="color: #22543d; margin-bottom: 10px;">🌱 Northern Rangeland Trust</h4>
-<p style="color: #22543d; font-size: 0.9rem; margin-bottom: 8px;">World's largest soil carbon removal project</p>
-<div style="display: flex; justify-content: space-between; align-items: center;">
-<span style="background: rgba(34, 84, 61, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #22543d;">50M tonnes over 30 years</span>
-<span style="background: rgba(34, 84, 61, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #22543d;">Northern Kenya</span>
-</div>
-</div>
+            <div style="border: 1px solid #e6f3f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="font-weight: 600; color: #003333;">Third-Party Verification</h4>
+                <span class="status-badge status-active">Established</span>
+              </div>
+              <div class="progress-bar" aria-label="Third-Party Verification 90%">
+                <div class="progress-fill progress-low" style="width: 90%;"></div>
+              </div>
+              <p style="color: #005555; font-size: 0.9rem;">Accredited verifiers for carbon projects, UNFCCC review for national reports</p>
+            </div>
 
-<div style="background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
-<h4 style="color: #742a2a; margin-bottom: 10px;">🔥 EcoSafi Cookstoves</h4>
-<p style="color: #742a2a; font-size: 0.9rem; margin-bottom: 8px;">Premium carbon pricing leader</p>
-<div style="display: flex; justify-content: space-between; align-items: center;">
-<span style="background: rgba(116, 42, 42, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #742a2a;">$35/tonne CO₂</span>
-<span style="background: rgba(116, 42, 42, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #742a2a;">Biomass gasification</span>
-</div>
-</div>
+            <div style="border: 1px solid #e6f3f0; border-radius: 8px; padding: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="font-weight: 600; color: #003333;">Digital Systems Integration</h4>
+                <span class="status-badge status-limited">Basic</span>
+              </div>
+              <div class="progress-bar" aria-label="Digital Systems Integration 40%">
+                <div class="progress-fill progress-high" style="width: 40%;"></div>
+              </div>
+              <p style="color: #005555; font-size: 0.9rem;">KCERT tool in development, limited real-time monitoring capabilities</p>
+            </div>
+          </div>
+        </div>
 
-<div style="background: linear-gradient(135deg, #bee3f8 0%, #90cdf4 100%); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
-<h4 style="color: #2a4365; margin-bottom: 10px;">🌊 Mikoko Pamoja</h4>
-<p style="color: #2a4365; font-size: 0.9rem; margin-bottom: 8px;">World's first blue carbon project</p>
-<div style="display: flex; justify-content: space-between; align-items: center;">
-<span style="background: rgba(42, 67, 101, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #2a4365;">Mangrove restoration</span>
-<span style="background: rgba(42, 67, 101, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #2a4365;">Gazi Bay</span>
-</div>
-</div>
+        <div class="grid grid-2">
+          <div class="card">
+            <h3 style="margin-bottom: 20px; color: #003333;">MRV Gaps for Carbon Finance</h3>
+            <ul style="color: #005555; line-height: 1.8;">
+              <li>Limited baseline data for new project types</li>
+              <li>Insufficient remote sensing coverage in ASALs</li>
+              <li>Weak integration between national and project-level MRV</li>
+              <li>Limited capacity for soil carbon measurements</li>
+              <li>Inconsistent methodologies across sectors</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom: 20px; color: #003333;">International Standards Alignment</h3>
+            <div style="margin-bottom: 15px;">
+              <h4 style="color: #004444; font-size: 1rem; margin-bottom: 8px;">IPCC 2006 Guidelines</h4>
+              <p style="font-size: 0.9rem; color: #005555;">Fully implemented with plans for 2019 refinement</p>
+            </div>
+            <div style="margin-bottom: 15px;">
+              <h4 style="color: #004444; font-size: 1rem; margin-bottom: 8px;">ISO 14064 Series</h4>
+              <p style="font-size: 0.9rem; color: #005555;">Partial adoption for project-level accounting</p>
+            </div>
+            <div style="margin-bottom: 15px;">
+              <h4 style="color: #004444; font-size: 1rem; margin-bottom: 8px;">GHG Protocol</h4>
+              <p style="font-size: 0.9rem; color: #005555;">Corporate reporting framework adopted</p>
+            </div>
+            <div>
+              <h4 style="color: #004444; font-size: 1rem; margin-bottom: 8px;">TCFD Framework</h4>
+              <p style="font-size: 0.9rem; color: #005555;">Limited implementation in financial sector</p>
+            </div>
+          </div>
+        </div>
 
-<div style="background: linear-gradient(135deg, #fef5e7 0%, #fbd38d 100%); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
-<h4 style="color: #975a16; margin-bottom: 10px;">🌾 Kenya Agricultural Carbon</h4>
-<p style="color: #975a16; font-size: 0.9rem; margin-bottom: 8px;">Smallholder farmer empowerment</p>
-<div style="display: flex; justify-content: space-between; align-items: center;">
-<span style="background: rgba(151, 90, 22, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #975a16;">30,000 farmers</span>
-<span style="background: rgba(151, 90, 22, 0.2); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; color: #975a16;">22,000 hectares</span>
-</div>
-</div>
-</div>
-</div>
+        <div class="methodology-note">
+          <strong>Methodology Note:</strong> This MRV assessment is based on Kenya's First Biennial Transparency Report (2024) and follows IPCC 2006 guidelines with Tier 1 and Tier 2 methodologies. Data confidence levels vary by sector, with energy and industrial processes having higher certainty than agriculture and LULUCF sectors. County-level data remains limited, affecting sub-national carbon project verification accuracy.
+        </div>
+      </section>
 
-<!-- Regulatory Framework and Benefits -->
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">💰 2024 Benefit-Sharing Requirements</h3>
-<div class="grid grid-2">
-<div style="border: 2px solid #43e97b; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">🌳 Land-based Projects</h4>
-<div style="text-align: center; margin: 15px 0;">
-<span style="font-size: 2rem; font-weight: bold; color: #22543d;">40%</span>
-<p style="color: #718096; font-size: 0.9rem; margin: 5px 0;">of annual earnings to communities</p>
-</div>
-<p style="color: #718096; font-size: 0.9rem;">Includes forestry, agriculture, REDD+, and land use projects</p>
-</div>
+      <!-- Challenges Tab -->
+      <section id="challenges" class="tab-content" aria-hidden="true">
+        <div class="card card-alert">
+          <h2 style="margin-bottom: 15px; color: #991b1b;">Critical Data Gaps &amp; Challenges</h2>
+          <p style="color: #991b1b; margin-bottom: 20px;">
+            Kenya's GHG accounting faces significant challenges that impact the accuracy of carbon credit assessments, particularly in arid and semi-arid lands where traditional methodologies may not capture local realities.
+          </p>
+        </div>
 
-<div style="border: 2px solid #ffa726; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<h4 style="font-weight: 600; color: #2d3748; margin-bottom: 10px;">⚡ Non-land Projects</h4>
-<div style="text-align: center; margin: 15px 0;">
-<span style="font-size: 2rem; font-weight: bold; color: #975a16;">25%</span>
-<p style="color: #718096; font-size: 0.9rem; margin: 5px 0;">of annual earnings to communities</p>
-</div>
-<p style="color: #718096; font-size: 0.9rem;">Includes cookstoves, solar, clean energy, and technology projects</p>
-</div>
-</div>
-</div>
+        <div class="card">
+          <h3 style="margin-bottom: 20px; color: #003333;">Data Gap Analysis</h3>
+          <div style="space-y: 15px;">
+            <div style="border: 1px solid #e6f3f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="font-weight: 600; color: #003333;">County-level Data</h4>
+                <span class="status-badge status-limited">Very High Impact</span>
+              </div>
+              <div class="progress-bar" aria-label="County-level Data impact 90%">
+                <div class="progress-fill progress-high" style="width: 90%;"></div>
+              </div>
+              <p style="color: #005555; font-size: 0.9rem;">Limited sub-national emissions data availability across 47 counties</p>
+            </div>
+            <div style="border: 1px solid #e6f3f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="font-weight: 600; color: #003333;">Land Use Changes</h4>
+                <span class="status-badge status-limited">Very High Impact</span>
+              </div>
+              <div class="progress-bar" aria-label="Land Use Changes impact 85%">
+                <div class="progress-fill progress-high" style="width: 85%;"></div>
+              </div>
+              <p style="color: #005555; font-size: 0.9rem;">Uncertain land use transition data, especially in ASALs</p>
+            </div>
+            <div style="border: 1px solid #e6f3f0; border-radius: 8px; padding: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="font-weight: 600; color: #003333;">Activity Data vs Emissions</h4>
+                <span class="status-badge status-partial">High Impact</span>
+              </div>
+              <div class="progress-bar" aria-label="Activity Data vs Emissions impact 75%">
+                <div class="progress-fill progress-medium" style="width: 75%;"></div>
+              </div>
+              <p style="color: #005555; font-size: 0.9rem;">Mismatch between reported activities and actual emissions</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<!-- County Distribution -->
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">📍 Top 10 Counties by Carbon Credits</h3>
-<div class="chart-container">
-<canvas id="carbonCountyDetailedChart"></canvas>
-</div>
-</div>
+      <!-- Timeline Tab -->
+      <section id="timeline" class="tab-content" aria-hidden="true">
+        <div class="card">
+          <h2 style="margin-bottom: 30px; color: #003333;">GHG Accounting Development Timeline</h2>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-year">2016</div>
+              <div class="timeline-event">Climate Change Act enacted — Legal framework established</div>
+              <span class="status-badge" style="background: #d1fae5; color: #065f46;">Legal</span>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-year">2018</div>
+              <div class="timeline-event">First National Communication submitted to UNFCCC</div>
+              <span class="status-badge" style="background: #dbeafe; color: #1e3a8a;">Report</span>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-year">2020</div>
+              <div class="timeline-event">Updated Nationally Determined Contribution (NDC) submitted</div>
+              <span class="status-badge" style="background: #fef3c7; color: #92400e;">Policy</span>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-year">2023</div>
+              <div class="timeline-event">Africa Climate Summit hosted in Nairobi — Climate leadership demonstration</div>
+              <span class="status-badge" style="background: #d1fae5; color: #065f46;">Leadership</span>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-year">2024</div>
+              <div class="timeline-event">First Biennial Transparency Report submitted with comprehensive 2022 data</div>
+              <span class="status-badge" style="background: #dbeafe; color: #1e3a8a;">Report</span>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-year">2024</div>
+              <div class="timeline-event">Carbon Market Regulations enacted — comprehensive framework operational</div>
+              <span class="status-badge" style="background: #fef3c7; color: #92400e;">Regulatory</span>
+            </div>
+          </div>
+        </div>
 
-<!-- Market Trends -->
-<div class="card gradient-card">
-<h3 style="margin-bottom: 20px;">📈 Market Trends & Future Outlook</h3>
-<div class="grid grid-3">
-<div class="metric-card">
-<div class="metric-value">$4-35</div>
-<div class="metric-label">Price Range/tonne CO₂</div>
-</div>
-<div class="metric-card">
-<div class="metric-value">144M</div>
-<div class="metric-label">Africa Credits (2024)</div>
-</div>
-<div class="metric-card">
-<div class="metric-value">20%</div>
-<div class="metric-label">Africa's Global Share</div>
-</div>
-</div>
-<div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; margin-top: 20px;">
-<h4 style="margin-bottom: 10px;">🎯 Growth Drivers</h4>
-<p style="opacity: 0.9; margin-bottom: 5px;">• Enhanced regulatory framework providing investor confidence</p>
-<p style="opacity: 0.9; margin-bottom: 5px;">• Premium pricing for high-integrity projects with rigorous methodologies</p>
-<p style="opacity: 0.9; margin-bottom: 5px;">• Strong focus on nature-based solutions and community benefits</p>
-<p style="opacity: 0.9;">• Growing international demand from corporate net-zero commitments</p>
-</div>
-</div>
-</div>
+        <div class="card" style="background: #f0f7f4;">
+          <h3 style="margin-bottom: 20px; color: #003333;">Future Milestones</h3>
+          <div style="space-y: 10px;">
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+              <span style="color: #004444;">Enhanced Transparency Framework full implementation (2024–2025)</span>
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+              <span style="color: #004444;">County-level GHG inventory development and deployment</span>
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+              <span style="color: #004444;">KCERT tool expansion and public deployment</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+              <span style="color: #004444;">Regional GHG database integration with EAC partners</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
 
-<!-- ✅ CRITICAL: Proper Carbon Tab Closing -->
+    <footer class="footer">
+      <p class="author">Developed by Stephanie Ojee | 2024 | ESG &amp; Climate Finance Professional</p>
+      <p>For carbon market transparency and climate action</p>
+      <p style="margin-top: 10px; font-size: 0.9rem;">Natural Resources Management &amp; Climate Policy Analysis</p>
+      <p style="margin-top: 5px; font-size: 0.8rem;">
+        Data sources: Kenya's First BTR (2024), UNFCCC, World Bank, Kenya National Bureau of Statistics, Climate Change Directorate
+      </p>
+      <p style="margin-top: 5px; font-size: 0.7rem;">
+        Latest official data:
+        <a href="https://unfccc.int/documents/636608" style="color: #006666;" target="_blank" rel="noopener">Kenya BTR 2024</a> |
+        <a href="https://climatechange.go.ke/" style="color: #006666;" target="_blank" rel="noopener">Climate Change Directorate</a>
+      </p>
+    </footer>
+  </div>
 
-<!-- Challenges Tab -->
-<div id="challenges" class="tab-content">
-<div class="alert-card card">
-<h2 style="margin-bottom: 15px; color: #742a2a;">🚨 Critical Data Gaps & Challenges</h2>
-<p style="color: #742a2a; margin-bottom: 20px;">
-Kenya's GHG accounting faces significant challenges that impact the accuracy of carbon credit assessments, particularly in arid and semi-arid lands where traditional methodologies may not capture local realities.
-</p>
-</div>
+  <script>
+    // ---------- Color-blind–safe palette (Okabe–Ito) ----------
+    const PALETTE = {
+      blue:      '#0072B2',
+      orange:    '#E69F00',
+      green:     '#009E73',
+      vermilion: '#D55E00',
+      purple:    '#CC79A7',
+      yellow:    '#F0E442',
+      sky:       '#56B4E9',
+      black:     '#000000'
+    };
+    const SERIES = [
+      PALETTE.blue, PALETTE.orange, PALETTE.green, PALETTE.vermilion,
+      PALETTE.purple, PALETTE.yellow, PALETTE.sky, PALETTE.black
+    ];
 
-<div class="card">
-<h3 style="margin-bottom: 20px; color: #2d3748;">Data Gap Analysis</h3>
-<div style="space-y: 15px;">
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-<h4 style="font-weight: 600; color: #2d3748;">County-level Data</h4>
-<span class="status-badge" style="background: #fed7d7; color: #742a2a;">Very High Impact</span>
-</div>
-<div class="progress-bar">
-<div class="progress-fill progress-high" style="width: 90%;"></div>
-</div>
-<p style="color: #718096; font-size: 0.9rem;">Limited sub-national emissions data availability across 47 counties</p>
-</div>
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 15px;">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-<h4 style="font-weight: 600; color: #2d3748;">Land Use Changes</h4>
-<span class="status-badge" style="background: #fed7d7; color: #742a2a;">Very High Impact</span>
-</div>
-<div class="progress-bar">
-<div class="progress-fill progress-high" style="width: 85%;"></div>
-</div>
-<p style="color: #718096; font-size: 0.9rem;">Uncertain land use transition data, especially in ASALs</p>
-</div>
-<div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-<h4 style="font-weight: 600; color: #2d3748;">Activity Data vs Emissions</h4>
-<span class="status-badge" style="background: #fef5e7; color: #975a16;">High Impact</span>
-</div>
-<div class="progress-bar">
-<div class="progress-fill progress-medium" style="width: 75%;"></div>
-</div>
-<p style="color: #718096; font-size: 0.9rem;">Mismatch between reported activities and actual emissions</p>
-</div>
-</div>
-</div>
-</div>
+    // ---------- Global data ----------
+    const emissionsData = {
+      2010: { energy: 15.2, agriculture: 29.8, forestry: -15.2, waste: 3.1, industrial: 2.3, total: 73.2 },
+      2012: { energy: 16.1, agriculture: 31.2, forestry: -16.1, waste: 3.3, industrial: 2.5, total: 76.8 },
+      2014: { energy: 17.3, agriculture: 32.1, forestry: -16.8, waste: 3.5, industrial: 2.8, total: 79.1 },
+      2016: { energy: 18.5, agriculture: 33.4, forestry: -17.2, waste: 3.8, industrial: 3.1, total: 82.3 },
+      2018: { energy: 19.8, agriculture: 34.6, forestry: -17.9, waste: 4.1, industrial: 3.4, total: 84.9 },
+      2020: { energy: 21.5, agriculture: 36.1, forestry: -18.3, waste: 4.4, industrial: 3.7, total: 87.6 },
+      2022: { energy: 23.2, agriculture: 37.8, forestry: -18.8, waste: 4.8, industrial: 4.1, total: 113.3 }
+    };
 
-<!-- Timeline Tab -->
-<div id="timeline" class="tab-content">
-<div class="card">
-<h2 style="margin-bottom: 30px; color: #2d3748;">GHG Accounting Development Timeline</h2>
-<div class="timeline">
-<div class="timeline-item">
-<div class="timeline-year">2016</div>
-<div class="timeline-event">Climate Change Act enacted - Legal framework established</div>
-<span class="status-badge" style="background: #e6fffa; color: #234e52;">Legal</span>
-</div>
-<div class="timeline-item">
-<div class="timeline-year">2018</div>
-<div class="timeline-event">First National Communication submitted to UNFCCC</div>
-<span class="status-badge" style="background: #c6f6d5; color: #22543d;">Report</span>
-</div>
-<div class="timeline-item">
-<div class="timeline-year">2020</div>
-<div class="timeline-event">Updated Nationally Determined Contribution (NDC) submitted</div>
-<span class="status-badge" style="background: #bee3f8; color: #2a4365;">Policy</span>
-</div>
-<div class="timeline-item">
-<div class="timeline-year">2022</div>
-<div class="timeline-event">Enhanced Transparency Framework preparation begins</div>
-<span class="status-badge" style="background: #faf5ff; color: #553c9a;">Technical</span>
-</div>
-<div class="timeline-item">
-<div class="timeline-year">2024</div>
-<div class="timeline-event">First Biennial Transparency Report submitted</div>
-<span class="status-badge" style="background: #c6f6d5; color: #22543d;">Report</span>
-</div>
-</div>
-</div>
+    const regionalData = {
+      kenya:   { emissions: 87.6,  perCapita: 1.8, mainSource: 'Livestock',   carbonProjects: 200 },
+      vietnam: { emissions: 316.0, perCapita: 3.2, mainSource: 'Energy',      carbonProjects: 15  },
+      ethiopia:{ emissions: 180.2, perCapita: 1.6, mainSource: 'Agriculture', carbonProjects: 50  },
+      tanzania:{ emissions: 98.4,  perCapita: 1.7, mainSource: 'LULUCF',      carbonProjects: 30  },
+      uganda:  { emissions: 89.1,  perCapita: 1.9, mainSource: 'Agriculture', carbonProjects: 25  },
+      rwanda:  { emissions: 12.3,  perCapita: 0.9, mainSource: 'Agriculture', carbonProjects: 10  }
+    };
 
-<!-- new timeline items --> 
-<div class="timeline-item">
-<div class="timeline-year">2023</div>
-<div class="timeline-event">Africa Climate Summit hosted in Nairobi - Climate leadership demonstration</div>
-<span class="status-badge" style="background: #c6f6d5; color: #22543d;">Leadership</span>
-</div>
-<div class="timeline-item">
-<div class="timeline-year">2024</div>
-<div class="timeline-event">First Biennial Transparency Report submitted with comprehensive 2022 data</div>
-<span class="status-badge" style="background: #c6f6d5; color: #22543d;">Report</span>
-</div>
-<div class="timeline-item">
-<div class="timeline-year">2024</div>
-<div class="timeline-event">Carbon Market Regulations enacted - comprehensive framework operational</div>
-<span class="status-badge" style="background: #bee3f8; color: #2a4365;">Regulatory</span>
-</div>
+    // ---------- Scenario globals ----------
+    let scenarioChart;
+    const baselineEmissions = {
+      energy: 21.5,
+      agriculture_crops: 8.7,
+      agriculture_livestock: 27.4,
+      forestry: -46.8,
+      waste: 5.2,
+      industrial: 3.7
+    };
 
-<div class="card" style="background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);">
-<h3 style="margin-bottom: 20px; color: #2a4365;">🔮 Future Milestones</h3>
-<div style="space-y: 10px;">
-<div style="display: flex; align-items: center; margin-bottom: 10px;">
-<span style="margin-right: 10px;">📈 </span>
-<span style="color: #2d3748;">Enhanced Transparency Framework full implementation (2024-2025)</span>
-</div>
-<div style="display: flex; align-items: center; margin-bottom: 10px;">
-<span style="margin-right: 10px;">📍 </span>
-<span style="color: #2d3748;">County-level GHG inventory development and deployment</span>
-</div>
-<div style="display: flex; align-items: center; margin-bottom: 10px;">
-<span style="margin-right: 10px;">🛠️ </span>
-<span style="color: #2d3748;">KCERT tool expansion and public deployment</span>
-</div>
-<div style="display: flex; align-items: center;">
-<span style="margin-right: 10px;">🌍 </span>
-<span style="color: #2d3748;">Regional GHG database integration with EAC partners</span>
-</div>
-</div>
-</div>
-</div>
-</main>
+    // ---------- Tabs ----------
+    const enableTabs = () => {
+      const tabs = document.querySelectorAll('.nav-tab');
+      const sections = document.querySelectorAll('.tab-content');
+      tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.getAttribute('data-tab');
+          tabs.forEach(t => t.classList.remove('active'));
+          tabs.forEach(t => t.setAttribute('aria-selected', 'false'));
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          sections.forEach(sec => {
+            if (sec.id === target) {
+              sec.classList.add('active');
+              sec.setAttribute('aria-hidden', 'false');
+            } else {
+              sec.classList.remove('active');
+              sec.setAttribute('aria-hidden', 'true');
+            }
+          });
 
-<footer class="footer">
-<p>Natural Resources Management & Climate Policy Analysis</p>
-<p style="margin-top: 5px; font-size: 0.8rem;">
-Data sources: Kenya's First BTR (2024), UNFCCC, World Bank, Kenya National Bureau of Statistics, Climate Change Directorate
-</p>
-<p style="margin-top: 5px; font-size: 0.7rem;">
-Latest official data: <a href="https://unfccc.int/sites/default/files/resource/Biennial%20Transparency%20Report%20-%20Final%202.pdf" style="color: #667eea;">Kenya BTR 2024</a> | 
-<a href="https://climatechange.go.ke/" style="color: #667eea;">Climate Change Directorate</a>
-</p>
-</footer>
-</div>
+          // Lazy-init charts for relevant tabs
+          setTimeout(() => {
+            if (target === 'emissions') initializeEmissionsCharts();
+            if (target === 'scenarios') initializeScenarioChart();
+            if (target === 'counties') initializeCountyCharts();
+            if (target === 'regional') initializeRegionalChart();
+            if (target === 'carbon') initializeCarbonCharts();
+            // MRV charts are represented by progress bars for now
+          }, 100);
+        });
+      });
+    };
 
-<script>
-// Global variables for scenario modeling
-let scenarioChart;
-const baselineEmissions = {
-    energy: 21.5,
-    agriculture_crops: 8.7,
-    agriculture_livestock: 27.4,
-    forestry: -46.8,
-    waste: 5.2,
-    industrial: 3.7
-};
+    // ---------- Exports ----------
+    function exportChart(chartId) {
+      const canvas = document.getElementById(chartId);
+      const url = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `${chartId}_${new Date().toISOString().split('T')[0]}.png`;
+      link.href = url;
+      link.click();
+    }
 
-// Tab functionality
-function showTab(tabName) {
-    const contents = document.querySelectorAll('.tab-content');
-    contents.forEach(content => content.classList.remove('active'));
-    
-    const tabs = document.querySelectorAll('.nav-tab');
-    tabs.forEach(tab => tab.classList.remove('active'));
-    
-    document.getElementById(tabName).classList.add('active');
-    event.target.classList.add('active');
-    
-    // Initialize charts when specific tabs are shown
-    setTimeout(() => {
-        if (tabName === 'emissions') initializeEmissionsCharts();
-        if (tabName === 'scenarios') initializeScenarioChart();
-        if (tabName === 'counties') initializeCountyCharts();
-        if (tabName === 'regional') initializeRegionalChart();
-        if (tabName === 'carbon') initializeCarbonCharts();
-    }, 100);
-}
+    // ---------- Scenario modeling ----------
+    function updateScenario() {
+      const economicGrowth = Number(document.getElementById('economicGrowth').value);
+      const renewableShare = Number(document.getElementById('renewableShare').value);
+      const forestCover = Number(document.getElementById('forestCover').value);
+      const livestockEfficiency = Number(document.getElementById('livestockEfficiency').value);
 
-// Scenario modeling functions
-function updateScenario() {
-    const economicGrowth = document.getElementById('economicGrowth').value;
-    const renewableShare = document.getElementById('renewableShare').value;
-    const forestCover = document.getElementById('forestCover').value;
-    const livestockEfficiency = document.getElementById('livestockEfficiency').value;
-    
-    // Update display values
-    document.getElementById('economicGrowthValue').textContent = economicGrowth;
-    document.getElementById('renewableShareValue').textContent = renewableShare;
-    document.getElementById('forestCoverValue').textContent = forestCover > 0 ? '+' + forestCover : forestCover;
-    document.getElementById('livestockEfficiencyValue').textContent = livestockEfficiency;
-    
-    // Calculate scenario impacts
-    const energyImpact = baselineEmissions.energy * (1 + economicGrowth/100 * 0.8 - renewableShare/100 * 0.6);
-    const forestryImpact = baselineEmissions.forestry * (1 + forestCover/100);
-    const livestockImpact = baselineEmissions.agriculture_livestock * (1 - livestockEfficiency/100 * 0.3);
-    
-    const totalProjected = energyImpact + baselineEmissions.agriculture_crops + livestockImpact + 
-                          forestryImpact + baselineEmissions.waste + baselineEmissions.industrial;
-    
-    const reduction = 117.6 - totalProjected; // vs BAU of 117.6 Mt
-    const ndcAlignment = Math.min(100, (reduction / 30) * 100); // Assuming 30 Mt reduction target
-    
-    document.getElementById('projectedTotal').textContent = totalProjected.toFixed(1);
-    document.getElementById('emissionReduction').textContent = (reduction > 0 ? '-' : '+') + Math.abs(reduction).toFixed(1);
-    document.getElementById('ndcAlignment').textContent = Math.round(ndcAlignment) + '%';
-    
-    // Update scenario chart
-    updateScenarioChart(energyImpact, livestockImpact, forestryImpact);
-}
+      document.getElementById('economicGrowthValue').textContent = economicGrowth.toFixed(1);
+      document.getElementById('renewableShareValue').textContent = renewableShare;
+      document.getElementById('forestCoverValue').textContent = forestCover > 0 ? `+${forestCover}` : `${forestCover}`;
+      document.getElementById('livestockEfficiencyValue').textContent = livestockEfficiency;
 
-function updateScenarioChart(energy, livestock, forestry) {
-    if (scenarioChart) {
+      // Simple elasticities for demo
+      const energyImpact = baselineEmissions.energy * (1 + (economicGrowth/100)*0.8 - (renewableShare/100)*0.6);
+      const forestryImpact = baselineEmissions.forestry * (1 + forestCover/100);
+      const livestockImpact = baselineEmissions.agriculture_livestock * (1 - (livestockEfficiency/100)*0.3);
+
+      const totalProjected = energyImpact + baselineEmissions.agriculture_crops + livestockImpact +
+                             forestryImpact + baselineEmissions.waste + baselineEmissions.industrial;
+
+      const reduction = 117.6 - totalProjected;
+      const ndcAlignment = Math.min(100, Math.max(0, (reduction / 30) * 100));
+
+      document.getElementById('projectedTotal').textContent = totalProjected.toFixed(1);
+      document.getElementById('emissionReduction').textContent =
+        (reduction >= 0 ? '-' : '+') + Math.abs(reduction).toFixed(1);
+      document.getElementById('ndcAlignment').textContent = Math.round(ndcAlignment) + '%';
+
+      updateScenarioChart(energyImpact, livestockImpact, forestryImpact);
+    }
+
+    function updateScenarioChart(energy, livestock, forestry) {
+      if (scenarioChart) {
         scenarioChart.data.datasets[1].data = [
-            energy, baselineEmissions.agriculture_crops, livestock, 
-            forestry, baselineEmissions.waste, baselineEmissions.industrial
+          energy, baselineEmissions.agriculture_crops, livestock,
+          forestry, baselineEmissions.waste, baselineEmissions.industrial
         ];
         scenarioChart.update();
+      }
     }
-}
 
-function updateCountyData() {
-    const county = document.getElementById('countySelect').value;
-    // This would update county-specific data visualization
-    console.log('Updating data for county:', county);
-}
+    function updateCountyData() {
+      const county = document.getElementById('countySelect').value;
+      console.log('Updating data for county:', county);
+      // Placeholder for county-specific data hooks
+    }
 
-// Initialize all charts when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    initializeOverviewCharts();
-});
-
-function initializeOverviewCharts() {
-    // Main sector chart
-    const ctx1 = document.getElementById('sectorChart').getContext('2d');
-    new Chart(ctx1, {
+    // ---------- Chart initializers ----------
+    function initializeOverviewCharts() {
+      // Sector bar
+      const ctx1 = document.getElementById('sectorChart').getContext('2d');
+      new Chart(ctx1, {
         type: 'bar',
         data: {
-            labels: ['Energy & Transport', 'Agriculture (Crop)', 'Agriculture (Livestock)', 'Forestry & Land Use', 'Waste', 'Industrial Processes'],
-            datasets: [{
-                label: 'Mt CO₂ eq',
-                data: [21.5, 8.7, 27.4, -46.8, 5.2, 3.7],
-                backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#43e97b'],
-                borderColor: 'rgba(255,255,255,0.1)',
-                borderWidth: 1,
-                borderRadius: 8
-            }]
+          labels: ['Energy', 'Crops', 'Livestock', 'Forestry', 'Waste', 'Industrial'],
+          datasets: [{
+            label: 'Mt CO₂eq',
+            data: [23.2, 8.7, 27.4, -18.8, 4.8, 4.1],
+            backgroundColor: [PALETTE.blue, PALETTE.orange, PALETTE.green, PALETTE.purple, PALETTE.yellow, PALETTE.sky],
+            borderColor: '#ffffff',
+            borderWidth: 1,
+            borderRadius: 6
+          }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.1)' } },
-                x: { grid: { display: false }, ticks: { maxRotation: 45, minRotation: 45 } }
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y} Mt CO₂eq`
+              }
             }
+          },
+          scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.08)' } },
+            x: { grid: { display: false } }
+          }
         }
-    });
+      });
 
-    // Trend chart
-    const ctx2 = document.getElementById('trendChart').getContext('2d');
-    new Chart(ctx2, {
+      // Trend line
+      const ctx2 = document.getElementById('trendChart').getContext('2d');
+      new Chart(ctx2, {
         type: 'line',
         data: {
-            labels: ['2010', '2012', '2014', '2016', '2018', '2020', '2022'],
-            datasets: [{
-                label: 'Total Emissions',
-                data: [73.2, 76.8, 79.1, 82.3, 84.9, 87.6, 113.3],
-                borderColor: '#667eea',
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
+          labels: Object.keys(emissionsData),
+          datasets: [{
+            label: 'Total Emissions (Mt CO₂eq)',
+            data: Object.values(emissionsData).map(d => d.total),
+            borderColor: PALETTE.blue,
+            backgroundColor: 'rgba(0,114,178,0.12)',
+            pointBackgroundColor: PALETTE.blue,
+            pointRadius: 3,
+            fill: true,
+            tension: 0.4
+          }]
         },
         options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: false, grid: { color: 'rgba(0,0,0,0.08)' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    function initializeEmissionsCharts() {
+      // Doughnut of sectors (absolute values)
+      const ctx3 = document.getElementById('detailedSectorChart');
+      if (ctx3) {
+        new Chart(ctx3.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+            labels: ['Livestock', 'Energy', 'Crops', 'Forestry (sink)', 'Waste', 'Industrial'],
+            datasets: [{
+              data: [34.2, 23.2, 8.7, 18.8, 4.8, 4.1], // Using magnitudes for sink display
+              backgroundColor: [PALETTE.green, PALETTE.blue, PALETTE.orange, PALETTE.purple, PALETTE.yellow, PALETTE.sky],
+              borderColor: '#ffffff',
+              borderWidth: 1
+            }]
+          },
+          options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: false, grid: { color: 'rgba(0,0,0,0.1)' } },
-                x: { grid: { display: false } }
-            }
-        }
-    });
-}
-
-function initializeEmissionsCharts() {
-    // Detailed sector chart
-    const ctx3 = document.getElementById('detailedSectorChart');
-    if (ctx3) {
-        new Chart(ctx3.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Livestock', 'Energy', 'Crops', 'Forestry (sink)', 'Waste', 'Industrial'],
-                datasets: [{
-                    data: [34.2, 18.2, 8.7, 18.3, 3.8, 4.1],
-                    backgroundColor: ['#ff6b6b', '#667eea', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom' }
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { padding: 20, usePointStyle: true }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.parsed || 0;
+                    return `${label}: ${value} Mt CO₂eq`;
+                  }
                 }
+              }
             }
+          }
         });
-    }
+      }
 
-    // GHG gas composition chart
-    const ctx4 = document.getElementById('gasChart');
-    if (ctx4) {
+      // Gas composition
+      const ctx4 = document.getElementById('gasChart');
+      if (ctx4) {
         new Chart(ctx4.getContext('2d'), {
-            type: 'pie',
-            data: {
-                labels: ['CO₂', 'CH₄', 'N₂O'],
-                datasets: [{
-                    data: [44, 51, 5],
-                    backgroundColor: ['#667eea', '#f093fb', '#43e97b']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
+          type: 'pie',
+          data: {
+            labels: ['CO₂', 'CH₄', 'N₂O'],
+            datasets: [{
+              data: [44, 51, 5],
+              backgroundColor: [PALETTE.blue, PALETTE.orange, PALETTE.green],
+              borderColor: '#ffffff',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom' }
             }
+          }
         });
+      }
     }
-}
 
-function initializeScenarioChart() {
-    const ctx = document.getElementById('scenarioChart');
-    if (ctx) {
+    function initializeScenarioChart() {
+      const ctx = document.getElementById('scenarioChart');
+      if (ctx) {
         scenarioChart = new Chart(ctx.getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: ['Energy', 'Crops', 'Livestock', 'Forestry', 'Waste', 'Industrial'],
-                datasets: [{
-                    label: 'Current (2020)',
-                    data: [18.2, 8.7, 34.2, -18.3, 3.8, 4.1],
-                    backgroundColor: 'rgba(102, 126, 234, 0.6)'
-                }, {
-                    label: 'Projected (2030)',
-                    data: [22.1, 9.8, 29.1, -22.0, 4.2, 4.8],
-                    backgroundColor: 'rgba(245, 87, 108, 0.6)'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true }
-                }
+          type: 'bar',
+          data: {
+            labels: ['Energy', 'Crops', 'Livestock', 'Forestry', 'Waste', 'Industrial'],
+            datasets: [{
+              label: 'Current (2022)',
+              data: [23.2, 8.7, 34.2, -18.8, 4.8, 4.1],
+              backgroundColor: 'rgba(0,114,178,0.65)', // blue
+              borderColor: PALETTE.blue,
+              borderWidth: 1
+            }, {
+              label: 'Projected (2030)',
+              data: [25.1, 9.8, 29.1, -22.0, 5.2, 4.8],
+              backgroundColor: 'rgba(230,159,0,0.65)', // orange
+              borderColor: PALETTE.orange,
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+              y: { beginAtZero: true }
             }
+          }
         });
+      }
     }
-}
 
-function initializeCountyCharts() {
-    // ASAL counties chart
-    const ctx5 = document.getElementById('asalChart');
-    if (ctx5) {
+    function initializeCountyCharts() {
+      const ctx5 = document.getElementById('asalChart');
+      if (ctx5) {
         new Chart(ctx5.getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: ['Turkana', 'Marsabit', 'Garissa', 'Mandera', 'Wajir', 'Kajiado'],
-                datasets: [{
-                    label: 'Mt CO₂eq',
-                    data: [4.2, 3.1, 2.8, 2.1, 1.9, 3.4],
-                    backgroundColor: '#ffa726',
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
-            }
+          type: 'bar',
+          data: {
+            labels: ['Turkana', 'Marsabit', 'Garissa', 'Mandera', 'Wajir', 'Kajiado'],
+            datasets: [{
+              label: 'Mt CO₂eq',
+              data: [4.2, 3.1, 2.8, 2.1, 1.9, 3.4],
+              backgroundColor: PALETTE.orange,
+              borderColor: PALETTE.orange,
+              borderWidth: 1,
+              borderRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+          }
         });
-    }
+      }
 
-    // Per capita chart
-    const ctx6 = document.getElementById('perCapitaChart');
-    if (ctx6) {
+      const ctx6 = document.getElementById('perCapitaChart');
+      if (ctx6) {
         new Chart(ctx6.getContext('2d'), {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'ASAL Counties',
-                    data: [{x: 950000, y: 4.4}, {x: 460000, y: 6.7}, {x: 840000, y: 3.3}, {x: 870000, y: 2.4}],
-                    backgroundColor: '#ff6b6b'
-                }, {
-                    label: 'Other Counties',
-                    data: [{x: 4400000, y: 2.1}, {x: 2400000, y: 1.8}, {x: 2100000, y: 1.5}],
-                    backgroundColor: '#4ecdc4'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: { title: { display: true, text: 'Population' } },
-                    y: { title: { display: true, text: 't CO₂eq per capita' } }
-                }
+          type: 'scatter',
+          data: {
+            datasets: [{
+              label: 'ASAL Counties',
+              data: [{x: 950000, y: 4.4}, {x: 460000, y: 6.7}, {x: 840000, y: 3.3}, {x: 870000, y: 2.4}],
+              backgroundColor: PALETTE.purple,
+              pointRadius: 4,
+              pointStyle: 'triangle'
+            }, {
+              label: 'Other Counties',
+              data: [{x: 4400000, y: 2.1}, {x: 2400000, y: 1.8}, {x: 2100000, y: 1.5}],
+              backgroundColor: PALETTE.green,
+              pointRadius: 4,
+              pointStyle: 'circle'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+              x: { title: { display: true, text: 'Population' } },
+              y: { title: { display: true, text: 't CO₂eq per capita' } }
             }
+          }
         });
+      }
     }
-}
 
-function initializeRegionalChart() {
-    const ctx = document.getElementById('regionalChart');
-    if (ctx) {
+    function initializeRegionalChart() {
+      const ctx = document.getElementById('regionalChart');
+      if (ctx) {
         new Chart(ctx.getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: ['Kenya', 'Ethiopia', 'Tanzania', 'Uganda', 'Rwanda'],
-                datasets: [{
-                    label: 'Total Emissions (Mt CO₂eq)',
-                    data: [87.6, 180.2, 98.4, 89.1, 12.3],
-                    backgroundColor: ['#667eea', '#f093fb', '#43e97b', '#ffa726', '#ff6b6b'],
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
+          type: 'bar',
+          data: {
+            labels: ['Kenya', 'Vietnam', 'Ethiopia', 'Tanzania', 'Uganda', 'Rwanda'],
+            datasets: [{
+              label: 'Total Emissions (Mt CO₂eq)',
+              data: [87.6, 316.0, 180.2, 98.4, 89.1, 12.3],
+              backgroundColor: [PALETTE.blue, PALETTE.orange, PALETTE.green, PALETTE.purple, PALETTE.yellow, PALETTE.sky],
+              borderColor: '#ffffff',
+              borderWidth: 1,
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  afterLabel: function(context) {
+                    const country = context.label.toLowerCase();
+                    const data = regionalData[country];
+                    if (data) {
+                      return `Per capita: ${data.perCapita} t CO₂eq\nMain source: ${data.mainSource}\nCarbon projects: ${data.carbonProjects}`;
+                    }
+                    return '';
+                  }
+                }
+              }
             }
+          }
         });
+      }
     }
-}
 
-// Enhanced Carbon Projects Chart with Detailed Categories
-function initializeCarbonCharts() {
-// Detailed project types chart with new ID
-const ctx7 = document.getElementById('carbonProjectsDetailedChart');
-if (ctx7) {
-new Chart(ctx7.getContext('2d'), {
-type: 'doughnut',
-data: {
-labels: ['Forestry & Land Use', 'Clean Cookstoves', 'Agriculture', 'Clean Energy', 'Blue Carbon', 'Transport & Tech'],
-datasets: [{
-data: [35, 25, 20, 10, 5, 5], // Percentages based on research
-backgroundColor: ['#43e97b', '#ffa726', '#4ecdc4', '#667eea', '#0ea5e9', '#8b5cf6']
-}]
-},
-options: {
-responsive: true,
-maintainAspectRatio: false,
-plugins: {
-legend: { 
-position: 'bottom',
-labels: {
-padding: 20,
-usePointStyle: true
-}
-},
-tooltip: {
-callbacks: {
-label: function(context) {
-const label = context.label || '';
-const value = context.parsed || 0;
-const projects = Math.round((value / 100) * 200); // Calculate approximate number of projects
-return `${label}: ${value}% (≈${projects} projects)`;
-}
-}
-}
-}
-}
-});
-}
+    function initializeCarbonCharts() {
+      const ctx7 = document.getElementById('carbonProjectsChart');
+      if (ctx7) {
+        new Chart(ctx7.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+            labels: ['Forestry & Land Use', 'Clean Cookstoves', 'Agriculture', 'Clean Energy', 'Blue Carbon', 'Transport & Tech'],
+            datasets: [{
+              data: [35, 25, 20, 10, 5, 5],
+              backgroundColor: [PALETTE.green, PALETTE.orange, PALETTE.blue, PALETTE.sky, PALETTE.purple, PALETTE.yellow],
+              borderColor: '#ffffff',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { padding: 20, usePointStyle: true }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.parsed || 0;
+                    const projects = Math.round((value / 100) * 200);
+                    return `${label}: ${value}% (≈${projects} projects)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+    }
 
-// Enhanced county chart with new ID and more accurate data
-const ctx8 = document.getElementById('carbonCountyDetailedChart');
-if (ctx8) {
-new Chart(ctx8.getContext('2d'), {
-type: 'horizontalBar',
-data: {
-labels: ['Turkana', 'Kajiado', 'Marsabit', 'Kitui', 'Makueni', 'Garissa', 'Narok', 'Laikipia', 'Samburu', 'Baringo'],
-datasets: [{
-label: 'Credits (thousands)',
-data: [2500, 1800, 1400, 1200, 1000, 900, 800, 700, 650, 600], // Updated based on research
-backgroundColor: [
-'#43e97b', '#43e97b', '#43e97b', '#4ecdc4', '#4ecdc4', 
-'#43e97b', '#ffa726', '#4ecdc4', '#43e97b', '#4ecdc4'
-], // Color-coded by main project type
-borderRadius: 4
-}]
-},
-options: {
-responsive: true,
-maintainAspectRatio: false,
-plugins: { 
-legend: { display: false },
-tooltip: {
-callbacks: {
-afterLabel: function(context) {
-const projectTypes = [
-'Grassland Mgmt', 'REDD+', 'Soil Carbon', 'Agriculture', 'Cookstoves',
-'Forest Restoration', 'Mixed Projects', 'Agriculture', 'Rangeland', 'Agriculture'
-];
-return `Primary: ${projectTypes[context.dataIndex]}`;
-}
-}
-}
-},
-scales: { 
-y: { grid: { display: false } },
-x: { 
-title: { 
-display: true, 
-text: 'Carbon Credits (thousands of tonnes CO₂eq)' 
-}
-}
-}
-}
-});
-}
-}
-</script>
+    // ---------- Init ----------
+    document.addEventListener('DOMContentLoaded', () => {
+      enableTabs();
+      initializeOverviewCharts();
+    });
+  </script>
 </body>
 </html>
